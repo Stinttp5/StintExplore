@@ -16,6 +16,11 @@
       {
         "command": "stintexplore.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "stintexplore.cat",
+        "title": "Start new cat coding session",
+        "category": "Cat Coding"
       }
     ]
   },
