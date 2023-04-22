@@ -31,6 +31,18 @@ const webviewConfig = {
   outfile: "./out/webview.js",
 };
 
+const p5Config = {
+  entryPoints: [
+    "./src/webview/libraries/p5.min.js",
+    "./src/webview/libraries/p5.func.min.js",
+    "./src/webview/libraries/p5.gui.js",
+    "./src/webview/libraries/p5.sound.min.js",
+    "./src/webview/libraries/p5.explore.js",
+    "./src/webview/libraries/quicksettings.js",
+  ],
+  outdir: "./out/libraries",
+};
+
 // This watch config adheres to the conventions of the esbuild-problem-matchers
 // extension (https://github.com/connor4312/esbuild-problem-matchers#esbuild-via-js)
 /** @type BuildOptions */
@@ -66,11 +78,16 @@ const watchConfig = {
         ...webviewConfig,
         ...watchConfig,
       });
+      await build({
+        ...p5Config,
+        ...watchConfig,
+      });
       console.log("[watch] build finished");
     } else {
       // Build extension and webview code
       await build(extensionConfig);
       await build(webviewConfig);
+      await build(p5Config);
       console.log("build complete");
     }
   } catch (err) {

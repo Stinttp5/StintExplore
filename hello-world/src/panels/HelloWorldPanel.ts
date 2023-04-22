@@ -140,8 +140,6 @@ export class HelloWorldPanel {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body>
 					<script src="${p5minUri}"></script>
           <script src="${p5soundUri}"></script>
           <script src="${p5qsUri}"></script>

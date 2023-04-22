@@ -22,12 +22,14 @@
       }
     ],
     "menus": {
-      "explorer/context": [{
+      "explorer/context": [
+        {
           "when": "resourceLangId == javascript",
           "command": "hello-world.showHelloWorld",
           "group": "MyGroup"
-    }]
-  }
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
