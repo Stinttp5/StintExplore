@@ -30,7 +30,10 @@ function draw() {
   let pacHeight = 100;
   let pacWidth = 100;
   let border = 20;
-  const type = explore("type", "number", 0, 1);
+  const type = explore("type", "number", {
+    min: 0,
+    max: 1,
+  });
   for (let i = -8; i < 8; i++) {
     let xNudge = (pacWidth+border)*i;
     for (let j = -8; j < 8; j++) {
