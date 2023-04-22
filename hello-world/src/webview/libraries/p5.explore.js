@@ -30,6 +30,12 @@
         return (x,y,z) => {return noise(x, y, z) * (max - min) + min};
     };
 
+    const _stint_pareto = function (min, alpha) {
+        return () => {
+            return min/Math.pow(Math.random(),1/alpha)
+        }
+    }
+
     var namesToFunctions = {
         "uniform" : _stint_uniformRandom,
         "normal" : _stint_normalRandom,
