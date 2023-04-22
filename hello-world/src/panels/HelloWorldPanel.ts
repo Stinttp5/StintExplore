@@ -1,6 +1,7 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
+import { isObject } from "lodash";
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -53,7 +54,7 @@ export class HelloWorldPanel {
         // Panel view type
         "showHelloWorld",
         // Panel title
-        "Hello World!!!",
+        "Stint Explore",
         // The editor column the panel should be displayed in
         ViewColumn.One,
         // Extra panel configurations
@@ -87,6 +88,16 @@ export class HelloWorldPanel {
     }
   }
 
+  public static sendMessage(type: string, payload?: any) {
+    if (!HelloWorldPanel.currentPanel) {
+      return;
+    }
+
+    const panel = HelloWorldPanel.currentPanel;
+
+    panel._panel.webview.postMessage({ type, payload });
+  }
+
   /**
    * Defines and returns the HTML that should be rendered within the webview panel.
    *
@@ -110,11 +121,11 @@ export class HelloWorldPanel {
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
 					<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}';">
-          <title>Hello World!</title>
+          <title>Stint Explore</title>
         </head>
         <body>
-          <h1>Hello World!</h1>
-					<vscode-button id="howdy">Howdy!</vscode-button>
+          <div id="root"></div>
+					<vscode-button id="update">Update</vscode-button>
 					<script type="module" nonce="${nonce}" src="${webviewUri}"></script>
         </body>
       </html>
@@ -134,12 +145,12 @@ export class HelloWorldPanel {
         const text = message.text;
 
         switch (command) {
-          case "hello":
-            // Code that should run in response to the hello message command
-            window.showInformationMessage(text);
-            return;
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside src/webview/main.ts)
+          // case "newRandomTypes":
+          //   return;
+          case "updateParameters":
+            return;
         }
       },
       undefined,
