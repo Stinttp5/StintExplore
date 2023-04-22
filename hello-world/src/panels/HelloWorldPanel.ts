@@ -1,6 +1,7 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
+import { isObject } from "lodash";
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -43,46 +44,28 @@ export class HelloWorldPanel {
    *
    * @param extensionUri The URI of the directory containing the extension.
    */
-  public static render(extensionUri: Uri, sketchUri: Uri) {
-    // if (HelloWorldPanel.currentPanel) {
-    //   // If the webview panel already exists reveal it
-    //   HelloWorldPanel.currentPanel._panel.reveal(ViewColumn.One);
-    // } else {
-    //   // If a webview panel does not already exist create and show a new one
-    //   const panel = window.createWebviewPanel(
-    //     // Panel view type
-    //     "showHelloWorld",
-    //     // Panel title
-    //     "Hello World!!!",
-    //     // The editor column the panel should be displayed in
-    //     ViewColumn.One,
-    //     // Extra panel configurations
-    //     {
-    //       // Enable JavaScript in the webview
-    //       enableScripts: true,
-    //       // Restrict the webview to only load resources from the `out` directory
-    //       localResourceRoots: [Uri.joinPath(extensionUri, "out")],
-    //     }
-    //   );
-
-    //   HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri, sketchUri);
-    // }
-    // If a webview panel does not already exist create and show a new one
-    const panel = window.createWebviewPanel(
-      // Panel view type
-      "showHelloWorld",
-      // Panel title
-      "Hello World!!!",
-      // The editor column the panel should be displayed in
-      ViewColumn.One,
-      // Extra panel configurations
-      {
-        // Enable JavaScript in the webview
-        enableScripts: true,
-        // Restrict the webview to only load resources from the `out` directory
-        localResourceRoots: [Uri.joinPath(extensionUri, "out")],
-      }
-    );
+  public static render(extensionUri: Uri) {
+    if (HelloWorldPanel.currentPanel) {
+      // If the webview panel already exists reveal it
+      HelloWorldPanel.currentPanel._panel.reveal(ViewColumn.One);
+    } else {
+      // If a webview panel does not already exist create and show a new one
+      const panel = window.createWebviewPanel(
+        // Panel view type
+        "showHelloWorld",
+        // Panel title
+        "Stint Explore",
+        // The editor column the panel should be displayed in
+        ViewColumn.One,
+        // Extra panel configurations
+        {
+          // Enable JavaScript in the webview
+          enableScripts: true,
+          // Restrict the webview to only load resources from the `out` directory
+          localResourceRoots: [Uri.joinPath(extensionUri, "out")],
+        }
+      );
+    }
 
     HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri, sketchUri);
   }
@@ -103,6 +86,16 @@ export class HelloWorldPanel {
         disposable.dispose();
       }
     }
+  }
+
+  public static sendMessage(type: string, payload?: any) {
+    if (!HelloWorldPanel.currentPanel) {
+      return;
+    }
+
+    const panel = HelloWorldPanel.currentPanel;
+
+    panel._panel.webview.postMessage({ type, payload });
   }
 
   /**
@@ -147,20 +140,24 @@ export class HelloWorldPanel {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+					<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}';">
+        </head>
+        <body>
 					<script src="${p5minUri}"></script>
           <script src="${p5soundUri}"></script>
           <script src="${p5qsUri}"></script>
           <script src="${p5guiUri}"></script>
           <script src="${p5funcminUri}"></script>
           <script src="${p5exploreUri}"></script>
-          <title>Hello World!</title>
+          <title>Stint Explore</title>
         </head>
         <body>
           <h1>Hello World!!!!!!</h1>
           <h1>${test}</h1>
           <h1>${sketchUri2}</h1>
-					<vscode-button id="howdy">Howdy!</vscode-button>
-					<script type="module" src="${webviewUri}"></script>
+          <div id="root"></div>
+					<vscode-button id="update">Update</vscode-button>
+					<script type="module" nonce="${nonce}" src="${webviewUri}"></script>
           <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
           <script src="${sketchUri2}"></script>
         </body>
@@ -181,12 +178,12 @@ export class HelloWorldPanel {
         const text = message.text;
 
         switch (command) {
-          case "hello":
-            // Code that should run in response to the hello message command
-            window.showInformationMessage(text);
-            return;
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside src/webview/main.ts)
+          // case "newRandomTypes":
+          //   return;
+          case "updateParameters":
+            return;
         }
       },
       undefined,
