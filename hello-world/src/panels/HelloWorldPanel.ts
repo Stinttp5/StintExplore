@@ -23,7 +23,7 @@ export class HelloWorldPanel {
    * @param panel A reference to the webview panel
    * @param extensionUri The URI of the directory containing the extension
    */
-  private constructor(panel: WebviewPanel, extensionUri: Uri) {
+  private constructor(panel: WebviewPanel, extensionUri: Uri, sketchUri: Uri) {
     this._panel = panel;
 
     // Set an event listener to listen for when the panel is disposed (i.e. when the user closes
@@ -31,7 +31,7 @@ export class HelloWorldPanel {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     // Set the HTML content for the webview panel
-    this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri);
+    this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri, sketchUri);
 
     // Set an event listener to listen for messages passed from the webview context
     this._setWebviewMessageListener(this._panel.webview);
@@ -43,30 +43,48 @@ export class HelloWorldPanel {
    *
    * @param extensionUri The URI of the directory containing the extension.
    */
-  public static render(extensionUri: Uri) {
-    if (HelloWorldPanel.currentPanel) {
-      // If the webview panel already exists reveal it
-      HelloWorldPanel.currentPanel._panel.reveal(ViewColumn.One);
-    } else {
-      // If a webview panel does not already exist create and show a new one
-      const panel = window.createWebviewPanel(
-        // Panel view type
-        "showHelloWorld",
-        // Panel title
-        "Hello World!!!",
-        // The editor column the panel should be displayed in
-        ViewColumn.One,
-        // Extra panel configurations
-        {
-          // Enable JavaScript in the webview
-          enableScripts: true,
-          // Restrict the webview to only load resources from the `out` directory
-          localResourceRoots: [Uri.joinPath(extensionUri, "out")],
-        }
-      );
+  public static render(extensionUri: Uri, sketchUri: Uri) {
+    // if (HelloWorldPanel.currentPanel) {
+    //   // If the webview panel already exists reveal it
+    //   HelloWorldPanel.currentPanel._panel.reveal(ViewColumn.One);
+    // } else {
+    //   // If a webview panel does not already exist create and show a new one
+    //   const panel = window.createWebviewPanel(
+    //     // Panel view type
+    //     "showHelloWorld",
+    //     // Panel title
+    //     "Hello World!!!",
+    //     // The editor column the panel should be displayed in
+    //     ViewColumn.One,
+    //     // Extra panel configurations
+    //     {
+    //       // Enable JavaScript in the webview
+    //       enableScripts: true,
+    //       // Restrict the webview to only load resources from the `out` directory
+    //       localResourceRoots: [Uri.joinPath(extensionUri, "out")],
+    //     }
+    //   );
 
-      HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri);
-    }
+    //   HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri, sketchUri);
+    // }
+    // If a webview panel does not already exist create and show a new one
+    const panel = window.createWebviewPanel(
+      // Panel view type
+      "showHelloWorld",
+      // Panel title
+      "Hello World!!!",
+      // The editor column the panel should be displayed in
+      ViewColumn.One,
+      // Extra panel configurations
+      {
+        // Enable JavaScript in the webview
+        enableScripts: true,
+        // Restrict the webview to only load resources from the `out` directory
+        localResourceRoots: [Uri.joinPath(extensionUri, "out")],
+      }
+    );
+
+    HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri, sketchUri);
   }
 
   /**
@@ -98,9 +116,29 @@ export class HelloWorldPanel {
    * @returns A template string literal containing the HTML that should be
    * rendered within the webview panel
    */
-  private _getWebviewContent(webview: Webview, extensionUri: Uri) {
+  private _getWebviewContent(webview: Webview, extensionUri: Uri, sketchUri: Uri) {
     const webviewUri = getUri(webview, extensionUri, ["out", "webview.js"]);
-    const nonce = getNonce();
+    
+    const p5minUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.min.js"]);
+    const p5soundUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.sound.min.js"]);
+    const p5qsUri = getUri(webview, extensionUri, ["out", "libraries" , "quicksettings.js"]);
+    const p5guiUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.gui.js"]);
+    const p5funcminUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.func.min.js"]);
+    const p5exploreUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.explore.js"]);
+
+    const fs = require('fs');
+    const sketchUri2 = getUri(webview, extensionUri, ["out", "sketch.js"]);
+
+    // File destination.txt will be created or overwritten by default.
+    fs.copyFile(sketchUri.fsPath, sketchUri2.fsPath, (err: any) => {
+      if (err) throw err;
+      console.log('source.txt was copied to destination.txt');
+    });
+
+    const test = getUri(webview,sketchUri,["."]);
+    const test2 = p5minUri;
+
+    
 
     // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
     return /*html*/ `
@@ -109,13 +147,22 @@ export class HelloWorldPanel {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-					<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}';">
+					<script src="${p5minUri}"></script>
+          <script src="${p5soundUri}"></script>
+          <script src="${p5qsUri}"></script>
+          <script src="${p5guiUri}"></script>
+          <script src="${p5funcminUri}"></script>
+          <script src="${p5exploreUri}"></script>
           <title>Hello World!</title>
         </head>
         <body>
-          <h1>Hello World!</h1>
+          <h1>Hello World!!!!!!</h1>
+          <h1>${test}</h1>
+          <h1>${sketchUri2}</h1>
 					<vscode-button id="howdy">Howdy!</vscode-button>
-					<script type="module" nonce="${nonce}" src="${webviewUri}"></script>
+					<script type="module" src="${webviewUri}"></script>
+          <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
+          <script src="${sketchUri2}"></script>
         </body>
       </html>
     `;
