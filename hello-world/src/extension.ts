@@ -1,4 +1,4 @@
-import { commands, window, workspace, ExtensionContext } from "vscode";
+import { commands, window, workspace, ExtensionContext, Uri } from "vscode";
 import { HelloWorldPanel } from "./panels/HelloWorldPanel";
 
 import { debounce } from "lodash";
@@ -70,8 +70,8 @@ const getStintCalls = debounce((document: TextDocument) => {
 
 export function activate(context: ExtensionContext) {
   // Create the show hello world command
-  const showHelloWorldCommand = commands.registerCommand("hello-world.showHelloWorld", () => {
-    HelloWorldPanel.render(context.extensionUri);
+  const showHelloWorldCommand = commands.registerCommand("hello-world.showHelloWorld", (uri:Uri) => {
+    HelloWorldPanel.render(context.extensionUri,uri);
   });
 
   console.log("extension activated");
