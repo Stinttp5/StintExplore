@@ -27,7 +27,7 @@ const webviewConfig = {
   ...baseConfig,
   target: "es2020",
   format: "esm",
-  entryPoints: ["./src/webview/main.ts"],
+  entryPoints: ["./src/webview/main.ts","./src/webview/libraries/p5.explore.js","./src/webview/libraries/p5.func.min.js","./src/webview/libraries/p5.gui.js","./src/webview/libraries/p5.min.js","./src/webview/libraries/p5.sound.min.js","./src/webview/libraries/quicksettings.js"],
   outfile: "./out/webview.js",
 };
 

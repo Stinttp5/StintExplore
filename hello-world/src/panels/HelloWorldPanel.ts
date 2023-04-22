@@ -112,12 +112,12 @@ export class HelloWorldPanel {
     const webviewUri = getUri(webview, extensionUri, ["out", "webview.js"]);
     const nonce = getNonce();
     
-    const p5minUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.min.js"]);
-    const p5soundUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.sound.min.js"]);
-    const p5qsUri = getUri(webview, extensionUri, ["out", "libraries" , "quicksettings.js"]);
-    const p5guiUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.gui.js"]);
-    const p5funcminUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.func.min.js"]);
-    const p5exploreUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.explore.js"]);
+    const p5minUri = getUri(webview, extensionUri, ["assets", "libraries" , "p5.min.js"]);
+    const p5soundUri = getUri(webview, extensionUri, ["assets", "libraries" , "p5.sound.min.js"]);
+    const p5qsUri = getUri(webview, extensionUri, ["assets", "libraries" , "quicksettings.js"]);
+    const p5guiUri = getUri(webview, extensionUri, ["assets", "libraries" , "p5.gui.js"]);
+    const p5funcminUri = getUri(webview, extensionUri, ["assets", "libraries" , "p5.func.min.js"]);
+    const p5exploreUri = getUri(webview, extensionUri, ["assets", "libraries" , "p5.explore.js"]);
 
     const fs = require('fs');
     const sketchUri2 = getUri(webview, extensionUri, ["out", "sketch.js"]);
@@ -140,8 +140,6 @@ export class HelloWorldPanel {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body>
 					<script src="${p5minUri}"></script>
           <script src="${p5soundUri}"></script>
           <script src="${p5qsUri}"></script>
