@@ -10,7 +10,7 @@
     
     };
 
-    stintRandomParameters = {}
+    const stintRandomParameters = {}
 
     const _stint_uniformRandom = function (min, max) {
         return () => {return Math.random() * (max - min) + min};
@@ -36,7 +36,7 @@
         "perlin" : _stint_perlinRandom
     }
 
-    sampleCanvas = function(styleFunction) {
+    const sampleCanvas = function(styleFunction) {
         var canvas = document.createElement("canvas"),
             context = canvas.getContext("2d"),
             noiseScale = 0.1, // Perlin noise scale factor
@@ -64,14 +64,14 @@
         return canvas
     }
 
-    makeNumberGUI = function(randomId) {
+    const makeNumberGUI = function(randomId) {
 
         let canvas = sampleCanvas(_stint_uniformRandom(0,1))
 
-        properties = new Set()
+        const properties = new Set()
 
-        var settings = QuickSettings.create(20,20,randomId,document.body);
-        reloadPreview = function(f) {
+        const settings = QuickSettings.create(20,20,randomId,document.body);
+        const reloadPreview = function(f) {
             settings.removeControl("Preview");
             settings.addElement("Preview", sampleCanvas(f))
         }
@@ -104,7 +104,7 @@
         if (randomType === 'number') {
             if (!stintRandomParameters[randomId]) {
                 //make dropdown
-                dropdown = makeNumberGUI(randomId)
+                const dropdown = makeNumberGUI(randomId)
                 stintRandomParameters[randomId] = dropdown;
             }
             if (stintRandomParameters[randomId]) {

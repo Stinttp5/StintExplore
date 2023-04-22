@@ -27,8 +27,20 @@ const webviewConfig = {
   ...baseConfig,
   target: "es2020",
   format: "esm",
-  entryPoints: ["./src/webview/main.ts","./src/webview/libraries/p5.explore.js","./src/webview/libraries/p5.func.min.js","./src/webview/libraries/p5.gui.js","./src/webview/libraries/p5.min.js","./src/webview/libraries/p5.sound.min.js","./src/webview/libraries/quicksettings.js"],
+  entryPoints: ["./src/webview/main.ts"],
   outfile: "./out/webview.js",
+};
+
+const p5Config = {
+  entryPoints: [
+    "./src/webview/libraries/p5.min.js",
+    "./src/webview/libraries/p5.func.min.js",
+    "./src/webview/libraries/p5.gui.js",
+    "./src/webview/libraries/p5.sound.min.js",
+    "./src/webview/libraries/p5.explore.js",
+    "./src/webview/libraries/quicksettings.js",
+  ],
+  outdir: "./out/libraries",
 };
 
 // This watch config adheres to the conventions of the esbuild-problem-matchers
@@ -66,11 +78,16 @@ const watchConfig = {
         ...webviewConfig,
         ...watchConfig,
       });
+      await build({
+        ...p5Config,
+        ...watchConfig,
+      });
       console.log("[watch] build finished");
     } else {
       // Build extension and webview code
       await build(extensionConfig);
       await build(webviewConfig);
+      await build(p5Config);
       console.log("build complete");
     }
   } catch (err) {
