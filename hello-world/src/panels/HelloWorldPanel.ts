@@ -44,7 +44,7 @@ export class HelloWorldPanel {
    *
    * @param extensionUri The URI of the directory containing the extension.
    */
-  public static render(extensionUri: Uri) {
+  public static render(extensionUri: Uri, sketchUri: Uri) {
     if (HelloWorldPanel.currentPanel) {
       // If the webview panel already exists reveal it
       HelloWorldPanel.currentPanel._panel.reveal(ViewColumn.One);
@@ -65,9 +65,8 @@ export class HelloWorldPanel {
           localResourceRoots: [Uri.joinPath(extensionUri, "out")],
         }
       );
+      HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri, sketchUri);
     }
-
-    HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri, sketchUri);
   }
 
   /**
@@ -111,6 +110,7 @@ export class HelloWorldPanel {
    */
   private _getWebviewContent(webview: Webview, extensionUri: Uri, sketchUri: Uri) {
     const webviewUri = getUri(webview, extensionUri, ["out", "webview.js"]);
+    const nonce = getNonce();
     
     const p5minUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.min.js"]);
     const p5soundUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.sound.min.js"]);
@@ -140,7 +140,6 @@ export class HelloWorldPanel {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-					<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}';">
         </head>
         <body>
 					<script src="${p5minUri}"></script>

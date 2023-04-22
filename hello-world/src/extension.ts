@@ -24,21 +24,21 @@ const getStintCalls = debounce((document: TextDocument) => {
     visit(tree!, (node) => {
       // console.log({ node });
       // @ts-ignore
-      if (node.type === 'CallExpression' && node.callee.name === 'stintRandom') {
+      if (node.type === 'CallExpression' && node.callee.name === 'explore') {
         const randomIdNode = node.arguments[0];
         if (randomIdNode.type !== 'Literal' || typeof randomIdNode.value !== 'string') {
-          throw new Error(`stintRandom must be called with a string literal ID argument (at ${node.loc?.start.line}:${node.loc?.start.column}))`); // idt the loc actually works here
+          throw new Error(`explore must be called with a string literal ID argument (at ${node.loc?.start.line}:${node.loc?.start.column}))`); // idt the loc actually works here
         }
         const randomId = randomIdNode.value;
 
         const randomTypeNode = node.arguments[1];
         if (randomTypeNode.type !== 'Literal' || typeof randomTypeNode.value !== 'string') {
-          throw new Error(`stintRandom must be called with a string literal type argument (parsing ${randomId})`);
+          throw new Error(`explore must be called with a string literal type argument (parsing ${randomId})`);
         }
 
         const randomType = randomTypeNode.value;
         if (!['number', 'substructure', 'threshold', 'color'].includes(randomType)) {
-          throw new Error(`stintRandom must be called with a valid type argument (parsing ${randomId}). Valid arguments are 'number', 'substructure', 'threshold', 'color'`);
+          throw new Error(`explore must be called with a valid type argument (parsing ${randomId}). Valid arguments are 'number', 'substructure', 'threshold', 'color'`);
         }
 
         // const randomAncestorsNode = node.arguments[2];
@@ -48,9 +48,9 @@ const getStintCalls = debounce((document: TextDocument) => {
         const existingRandomType = newRandomTypes.find((r) => r.id === randomId);
         if (existingRandomType) {
           // if (existingRandomType.type !== randomType) {
-          //   throw new Error(`stintRandom called with conflicting types for ID ${randomId}`);
+          //   throw new Error(`explore called with conflicting types for ID ${randomId}`);
           // }
-          throw new Error(`stintRandom cannot be called multiple times with the same ID ${randomId}`);
+          throw new Error(`explore cannot be called multiple times with the same ID ${randomId}`);
         } else {
           newRandomTypes.push({
             id: randomId,
@@ -71,7 +71,7 @@ const getStintCalls = debounce((document: TextDocument) => {
 export function activate(context: ExtensionContext) {
   // Create the show hello world command
   const showHelloWorldCommand = commands.registerCommand("hello-world.showHelloWorld", (uri:Uri) => {
-    HelloWorldPanel.render(context.extensionUri,uri);
+    HelloWorldPanel.render(context.extensionUri, uri);
   });
 
   console.log("extension activated");
