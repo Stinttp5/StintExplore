@@ -12,12 +12,11 @@ function setup() {
 
   // Create the GUI
   sliderRange(0, 90, 1);
-  gui = createGui('p5.gui');
-  gui.addGlobals('myColor');
+  // gui = createGui('p5.gui');
+  // gui.addGlobals('myColor');
   
   // Only call draw when then gui is changed
   noLoop();
-  
 }
 
 
@@ -30,20 +29,17 @@ function draw() {
   let pacHeight = 100;
   let pacWidth = 100;
   let border = 20;
-  const type = explore("type", "number", {
-    min: 0,
-    max: 1,
-  });
+  const type = explore("type", "number", { Style: "normal",Mean: 1,Std: 49 });
   for (let i = -8; i < 8; i++) {
     let xNudge = (pacWidth+border)*i;
     for (let j = -8; j < 8; j++) {
       let yNudge = (pacHeight+border)*j;
       if (type < 0.5) {
-        myAngle = explore("angle","number",0,90,xNudge,yNudge);
+        myAngle = explore("angle", "number", { Style: "perlin",Mean: 51,Std: 51 });
         arc(width/2 + xNudge, height/2 + yNudge, pacWidth, pacHeight, myAngle/2, 360 - myAngle/2, PIE);
       } else {
         // squasres!
-        const squareSize = explore("squareSize","number",0,90,xNudge,yNudge);
+        const squareSize = explore("squareSize", "number", { Style: "normal",Mean: 50,Std: 51 });
         rect(width / 2 + xNudge - squareSize / 2, height / 2 + yNudge - squareSize / 2, squareSize, squareSize);
       }
     }
