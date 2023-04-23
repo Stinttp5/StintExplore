@@ -8,32 +8,35 @@
     const stintRandomParameters = {}
 
     const _stint_uniformRandom = function (parameters) {
-        let max = parameters["Max"];
-        let min = parameters["Min"];
-        return () => {return Math.random() * (max - min) + min};
+        let max = parseFloat(parameters["Max"]);
+        let min = parseFloat(parameters["Min"]);
+        // console.log("oh boy" + max + "    " + min);
+        return () => {return (Math.random() * (max - min)) + min};
+        // return () => {return max/2}
     };
 
     const _stint_normalRandom = function (parameters) {
-        let mean = parameters["Mean"];
-        let std = parameters["Std"];
+        let mean = parseFloat(parameters["Mean"]);
+        let std = parseFloat(parameters["Std"]);
         return () => {
             let u = 0;
             let v = 0;
             while (u === 0) u = Math.random();
             while (v === 0) v = Math.random();
-            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v) * std + mean;
+            return (Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v) * std) + mean;
+            // return mean
         };
     };
 
     const _stint_perlinRandom = function (parameters) {
-        let max = parameters["Max"];
-        let min = parameters["Min"];
+        let max = parseFloat(parameters["Max"]);
+        let min = parseFloat(parameters["Min"]);
         return (x,y,z) => {return noise(x, y, z) * (max - min) + min};
     };
 
     const _stint_pareto = function (parameters) {
-        let alpha = parameters["Alpha"];
-        let min = parameters["Min"];
+        let alpha = parseFloat(parameters["Alpha"]);
+        let min = parseFloat(parameters["Min"]);
         return () => {
             return min/Math.pow(Math.random(),1/alpha)
         }
@@ -66,14 +69,22 @@
 
         let RVs = Array.apply(null, Array(gridWidth * gridHeight)).map(Number.prototype.valueOf,0);
 
+        let minVal = styleFunction(0, 0);
+        let maxVal = minVal;
+
         for (var x = 0; x < gridWidth; x++) {
           for (var y = 0; y < gridHeight; y++) {
-              RVs[x * gridHeight + y] = styleFunction(x * noiseScale, y * noiseScale);
+              let v = styleFunction(x * noiseScale, y * noiseScale);
+              console.log("random value is: " + v)
+              RVs[x * gridHeight + y] = v;
+              minVal = Math.min(minVal,v);
+              maxVal = Math.max(maxVal,v);
           }
         }
 
-        let minVal = min(RVs)
-        let maxVal = max(RVs)
+        context.fillStyle = "black";
+        context.font = "14px Arial";
+        context.fillText("Min: " + minVal.toFixed(2) + " Max: " + maxVal.toFixed(2), 0, canvas.height);
 
         for (var x = 0; x < gridWidth; x++) {
             for (var y = 0; y < gridHeight; y++) {
@@ -89,19 +100,17 @@
                 context.fillRect(x * gridSize, y * gridSize, gridSize, gridSize);
             }
         }
-        context.fillStyle = "black";
-        context.font = "14px Arial";
-        context.fillText("Min: " + minVal.toFixed(2) + " Max: " + maxVal.toFixed(2), 0, canvas.height);
+        
         return canvas
     }
 
     module.exports = {sampleCanvas, namesToFunctions, _stint_normalRandom, _stint_perlinRandom, _stint_uniformRandom, _stint_pareto, namesToParams}
 
-    p5.prototype.explore = function(_randomId, randomType, parameters = {}) {
+    p5.prototype.explore = function(_randomId, randomType, parameters = {}, ...input) {
         if (randomType === "number") {
           if (parameters) {
             let style = parameters["Style"];
-            return namesToFunctions[style](parameters)();
+            return namesToFunctions[style](parameters)(input);
             // if (style === "uniform") {
             //   const { min, max } = parameters;
             //   return _stint_uniformRandom(min, max)();

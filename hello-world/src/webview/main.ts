@@ -99,9 +99,7 @@ const makeNumberGUI = function (randomId, type, parameters) {
         parameters[prop] = propertyDefaults[prop]
       }
       for (let prop of stintExplore.namesToParams[style]) {
-        settings.addNumber(prop,sliderMin,sliderMax,propertyDefaults[prop],1, (value) => {
-          return;
-        })
+        settings.addNumber(prop,sliderMin,sliderMax,propertyDefaults[prop],1, (value) => {return;})
       }
       reloadPreview(stintExplore.namesToFunctions[value.value](parameters))
 
