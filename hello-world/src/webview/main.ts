@@ -78,7 +78,7 @@ const makeNumberGUI = function (randomId, type, parameters) {
   };
   const styleDefault = parameters.hasOwnProperty('Style') ? JSON.parse(parameters.Style) : "uniform"; // string literal
   console.log({styleDefault});
-  const dropdownOptions = ["uniform", "normal", "perlin"];
+  const dropdownOptions = ["uniform", "normal", "perlin", "pareto"];
   settings
     .addDropDown("Style", dropdownOptions, (value) => {
       // console.log(`Dropdown value changed to ${value.value}`);
@@ -109,6 +109,28 @@ const makeNumberGUI = function (randomId, type, parameters) {
         });
         reloadPreview(stintExplore.namesToFunctions[value.value](meanDefault/100, stdDefault/100));
         // settings.addElement("Preview", sampleCanvas(stintExplore.namesToFunctions[value.value](0.5,0.166)))
+      } else if (value.value === "pareto") {
+        properties.add("Min");
+        properties.add("Alpha");
+        const minDefault = parameters.hasOwnProperty('Min') ? parseFloat(parameters.Min) : 50;
+        const alphaDefault = parameters.hasOwnProperty('Alpha') ? parseFloat(parameters.Alpha) : 50;
+        settings.addNumber("Min", 0, 100, minDefault, 1, (value) => {
+          reloadPreview(
+            stintExplore.namesToFunctions["pareto"](
+              value / 100,
+              parseFloat(parameters.Alpha) / 100
+            )
+          );
+        });
+        settings.addNumber("Alpha", 0, 100, alphaDefault, 1, (value) => {
+          reloadPreview(
+            stintExplore.namesToFunctions["pareto"](
+              parseFloat(parameters.Min) / 100,
+              value / 100
+            )
+          );
+        });
+        reloadPreview(stintExplore.namesToFunctions[value.value](minDefault/100, alphaDefault/100));
       } else {
         reloadPreview(stintExplore.namesToFunctions[value.value](0, 1));
         // settings.addElement("Preview", sampleCanvas(namesToFunctions[value.value](0,1)))

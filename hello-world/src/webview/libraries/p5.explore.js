@@ -34,7 +34,8 @@
     var namesToFunctions = {
         "uniform" : _stint_uniformRandom,
         "normal" : _stint_normalRandom,
-        "perlin" : _stint_perlinRandom
+        "perlin" : _stint_perlinRandom,
+        "pareto" : _stint_pareto
     }
 
     const sampleCanvas = function(styleFunction) {
@@ -81,6 +82,10 @@
             } else if (style === "perlin") {
               const { min, max, x, y, z } = parameters;
               return _stint_perlinRandom(min, max)(x, y, z);
+            } else if (style === "pareto") {
+              let min = parameters["Min"];
+              let alpha = parameters["Alpha"];
+              return _stint_pareto(min,alpha)();
             }
           }
           return 0;
