@@ -169,6 +169,12 @@ export const updateStintParameters = (id: string, settingName: string, changedVa
   }
 };
 
+const tryUpdateStint = () => {
+  const textEditor = lastActiveTextEditor!;
+  const document = textEditor?.document!;
+  if (document) getStintCalls(document); 
+};
+
 export function activate(context: ExtensionContext) {
   // Create the show hello world command
   const showHelloWorldCommand = commands.registerCommand(
@@ -181,6 +187,7 @@ export function activate(context: ExtensionContext) {
   console.log("extension activated");
   window.onDidChangeActiveTextEditor((editor) => {
     console.log("changed active text editor");
+    tryUpdateStint();
     if (editor) {
       lastActiveTextEditor = editor; // lol hate this
       // Register a listener for changes to the active text editor's document
