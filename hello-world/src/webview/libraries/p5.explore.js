@@ -1,8 +1,3 @@
-//
-
-// import QuickSettings = require("./quicksettings");
-
-
 (function(){
     p5.prototype.test = function() {
 
@@ -69,6 +64,8 @@
         }
         return canvas
     }
+
+    module.exports = {sampleCanvas, namesToFunctions, _stint_normalRandom, _stint_perlinRandom, _stint_uniformRandom}
 
     p5.prototype.explore = function(_randomId, randomType, parameters = {}) {
         if (randomType === "number") {

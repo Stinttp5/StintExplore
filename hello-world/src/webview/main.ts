@@ -5,6 +5,7 @@ import {
   vsCodeDropdown,
 } from "@vscode/webview-ui-toolkit";
 import QuickSettings from "./libraries/quicksettings";
+import * as stintExplore from "./libraries/p5.explore";
 
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
@@ -30,6 +31,7 @@ provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeDropdown());
 const vscode = acquireVsCodeApi();
 
 window.addEventListener("load", main);
+
 
 // Main function that gets executed once the webview DOM loads
 function main() {
@@ -71,8 +73,8 @@ const makeNumberGUI = function (randomId, type, parameters) {
   const settings = QuickSettings.create(0, 0, randomId, rootDiv);
   const reloadPreview = function (f) {
     // TODO
-    // settings.removeControl("Preview");
-    // settings.addElement("Preview", sampleCanvas(f))
+    settings.removeControl("Preview");
+    settings.addElement("Preview", stintExplore.sampleCanvas(f))
   };
   const styleDefault = parameters.hasOwnProperty('Style') ? JSON.parse(parameters.Style) : "uniform"; // string literal
   console.log({styleDefault});
@@ -90,25 +92,25 @@ const makeNumberGUI = function (randomId, type, parameters) {
         const meanDefault = parameters.hasOwnProperty('Mean') ? parseFloat(parameters.Mean) : 50;
         const stdDefault = parameters.hasOwnProperty('Std') ? parseFloat(parameters.Std) : 50;
         settings.addNumber("Mean", 0, 100, meanDefault, 1, (value) => {
-          // reloadPreview(
-          //   namesToFunctions["normal"](
-          //     value / 100,
-          //     stintRandomParameters[randomId].getValue("Std") / 100
-          //   )
-          // );
+          reloadPreview(
+            stintExplore.namesToFunctions["normal"](
+              value / 100,
+              parseFloat(parameters.Std) / 100
+            )
+          );
         });
         settings.addNumber("Std", 0, 100, stdDefault, 1, (value) => {
-          // reloadPreview(
-          //   namesToFunctions["normal"](
-          //     stintRandomParameters[randomId].getValue("Mean") / 100,
-          //     value / 100
-          //   )
-          // );
+          reloadPreview(
+            stintExplore.namesToFunctions["normal"](
+              parseFloat(parameters.Mean) / 100,
+              value / 100
+            )
+          );
         });
-        // reloadPreview(namesToFunctions[value.value](0.5, 0.166));
-        // settings.addElement("Preview", sampleCanvas(namesToFunctions[value.value](0.5,0.166)))
+        reloadPreview(stintExplore.namesToFunctions[value.value](meanDefault/100, stdDefault/100));
+        // settings.addElement("Preview", sampleCanvas(stintExplore.namesToFunctions[value.value](0.5,0.166)))
       } else {
-        // reloadPreview(namesToFunctions[value.value](0, 1));
+        reloadPreview(stintExplore.namesToFunctions[value.value](0, 1));
         // settings.addElement("Preview", sampleCanvas(namesToFunctions[value.value](0,1)))
       }
     })
