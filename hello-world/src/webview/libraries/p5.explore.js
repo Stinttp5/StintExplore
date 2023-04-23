@@ -70,73 +70,28 @@
         return canvas
     }
 
-    const makeNumberGUI = function(randomId) {
-
-        let canvas = sampleCanvas(_stint_uniformRandom(0,1))
-
-        const properties = new Set()
-
-        const settings = QuickSettings.create(20,20,randomId,document.body);
-        const reloadPreview = function(f) {
-            settings.removeControl("Preview");
-            settings.addElement("Preview", sampleCanvas(f))
+    p5.prototype.explore = function(_randomId, randomType, parameters = {}) {
+        if (randomType === "number") {
+          if (parameters) {
+            let style = parameters["Style"];
+            if (style === "uniform") {
+              const { min, max } = parameters;
+              return _stint_uniformRandom(min, max)();
+            } else if (style === "normal") {
+              let mean = parameters["Mean"];
+              let std = parameters["Std"];
+              return _stint_normalRandom(mean, std)();
+            } else if (style === "perlin") {
+              const { min, max, x, y, z } = parameters;
+              return _stint_perlinRandom(min, max)(x, y, z);
+            }
+          }
+          return 0;
+        } else if (randomType === "substructure") {
+        } else if (randomType === "color") {
+        } else if (randomType === "threshold") {
+          const [threshold] = args;
+          return Math.random() < threshold;
         }
-        settings.addDropDown("Style", ['uniform', 'normal', 'perlin'], (value) => {
-            console.log(`Dropdown value changed to ${value.value}`);
-            properties.forEach (function(prop) {settings.removeControl(prop)});
-            settings.removeControl("Preview")
-            if (value.value === 'normal') {
-                properties.add("Mean");
-                properties.add("Std");
-                settings.addNumber("Mean", 0, 100, 50, 1, (value) => {
-                    reloadPreview(namesToFunctions["normal"](value/100,stintRandomParameters[randomId].getValue("Std")/100))
-                })
-                settings.addNumber("Std", 0, 100, 50, 1, (value) => {
-                    reloadPreview(namesToFunctions["normal"](stintRandomParameters[randomId].getValue("Mean")/100,value/100))
-                })
-                reloadPreview(namesToFunctions[value.value](0.5,0.166))
-                // settings.addElement("Preview", sampleCanvas(namesToFunctions[value.value](0.5,0.166)))
-            } else {
-                reloadPreview(namesToFunctions[value.value](0,1))
-                // settings.addElement("Preview", sampleCanvas(namesToFunctions[value.value](0,1)))
-            }
-            })
-            .addElement("Preview", canvas);
-        settings.setGlobalChangeHandler(window._draw);
-        return settings;
-    };
-
-    p5.prototype.explore = function(randomId, randomType, ...args) {
-        if (randomType === 'number') {
-            if (!stintRandomParameters[randomId]) {
-                //make dropdown
-                const dropdown = makeNumberGUI(randomId)
-                stintRandomParameters[randomId] = dropdown;
-            }
-            if (stintRandomParameters[randomId]) {
-                let style = stintRandomParameters[randomId].getValue("Style").label
-                if (style === 'uniform') {
-                    const [ min, max ] = args;
-                    return _stint_uniformRandom(min, max)();
-                } else if (style === 'normal') {
-                    let mean = stintRandomParameters[randomId].getValue("Mean")
-                    let std = stintRandomParameters[randomId].getValue("Std")
-                    const [ min, max ] = args;
-                    return _stint_normalRandom(mean, std)();
-                } else if (style === 'perlin') {
-                    const [ min, max, x, y, z ] = args;
-                    return _stint_perlinRandom(min, max)(x, y, z);
-                }
-            }
-    
-            const [ min, max ] = args;
-            // return _stint_uniformRandom(min, max);
-            return 0;
-        } else if (randomType === 'substructure') {
-        } else if (randomType === 'color') {
-        } else if (randomType === 'threshold') {
-            const [ threshold ] = args;
-            return Math.random() < threshold;
-        }
-    };
+      };
 })();

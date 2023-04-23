@@ -2,6 +2,7 @@ import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from "vsco
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import { isObject } from "lodash";
+import { updateStintParameters } from "../extension";
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -147,15 +148,31 @@ export class HelloWorldPanel {
           <script src="${p5funcminUri}"></script>
           <script src="${p5exploreUri}"></script>
           <title>Stint Explore</title>
+          <style>
+            .qs_main {
+              position: static !important; /* shh */
+              margin-bottom: 20px;
+            }
+
+            body {
+              display: flex;
+              flex-direction: row;
+            }
+
+            #root {
+              /* flex: 1; */
+              width: 200px; /* yeah none of these width settings are working yikes */
+              padding: 10px;
+            }
+
+            main {
+              /* flex: 3; */
+            }
+          </style>
         </head>
         <body>
-          <h1>Hello World!!!!!!</h1>
-          <h1>${test}</h1>
-          <h1>${sketchUri2}</h1>
           <div id="root"></div>
-					<vscode-button id="update">Update</vscode-button>
 					<script type="module" nonce="${nonce}" src="${webviewUri}"></script>
-          <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
           <script src="${sketchUri2}"></script>
         </body>
       </html>
@@ -171,15 +188,13 @@ export class HelloWorldPanel {
   private _setWebviewMessageListener(webview: Webview) {
     webview.onDidReceiveMessage(
       (message: any) => {
-        const command = message.command;
-        const text = message.text;
+        const { command } = message;
 
         switch (command) {
-          // Add more switch case statements here as more webview message commands
-          // are created within the webview context (i.e. inside src/webview/main.ts)
-          // case "newRandomTypes":
-          //   return;
           case "updateParameters":
+            const { id, settingName, changedValue } = message;
+            // console.log('usp', { id, settingName, changedValue });
+            updateStintParameters(id, settingName, changedValue);
             return;
         }
       },
