@@ -163,14 +163,21 @@ const makeNumberGUI = function (randomId, type, parameters) {
 const handleUpdate = (id: string) => (settingName: string) => {
   const value = globalSettings[id].getValue(settingName);
   let changedValue = '';
+  let jsValue = '';
   if (value.value) { // dropdown
     changedValue = `"${value.value}"`; // add quotes, because this is a string literal
+    jsValue = `${value.value}`;
     // check for number
   } else if (value.toFixed) { // number
     changedValue = value;
+    jsValue = value;
   } else { // expression
     changedValue = value;
+    jsValue = value;
   }
   // console.log(id, settingName, changedValue);
   vscode.postMessage({ command: "updateParameters", id, settingName, changedValue });
+
+  stintExplore._store_Random_Parameter(id,settingName,jsValue);
+  
 }

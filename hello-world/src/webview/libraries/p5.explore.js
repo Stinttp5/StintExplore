@@ -7,6 +7,13 @@
 
     const stintRandomParameters = {}
 
+    const _store_Random_Parameter = function(id, settingName, newValue) {
+      if (!(id in stintRandomParameters)){
+        stintRandomParameters[id] = {}
+      }
+      stintRandomParameters[id][settingName] = newValue
+    }
+
     const _stint_uniformRandom = function (parameters) {
         let max = parseFloat(parameters["Max"]);
         let min = parseFloat(parameters["Min"]);
@@ -104,35 +111,43 @@
         return canvas
     }
 
-    module.exports = {sampleCanvas, namesToFunctions, _stint_normalRandom, _stint_perlinRandom, _stint_uniformRandom, _stint_pareto, namesToParams}
+    module.exports = {_store_Random_Parameter, sampleCanvas, namesToFunctions, _stint_normalRandom, _stint_perlinRandom, _stint_uniformRandom, _stint_pareto, namesToParams}
 
     p5.prototype.explore = function(_randomId, randomType, parameters = {}, ...input) {
-        if (randomType === "number") {
-          if (parameters) {
-            let style = parameters["Style"];
-            return namesToFunctions[style](parameters)(input);
-            // if (style === "uniform") {
-            //   const { min, max } = parameters;
-            //   return _stint_uniformRandom(min, max)();
-            // } else if (style === "normal") {
-            //   let mean = parameters["Mean"];
-            //   let std = parameters["Std"];
-            //   return _stint_normalRandom(mean, std)();
-            // } else if (style === "perlin") {
-            //   const { min, max, x, y, z } = parameters;
-            //   return _stint_perlinRandom(min, max)(x, y, z);
-            // } else if (style === "pareto") {
-            //   let min = parameters["Min"];
-            //   let alpha = parameters["Alpha"];
-            //   return _stint_pareto(min,alpha)();
-            // }
-          }
-          return 0;
-        } else if (randomType === "substructure") {
-        } else if (randomType === "color") {
-        } else if (randomType === "threshold") {
-          const [threshold] = args;
-          return Math.random() < threshold;
+      if (_randomId in stintRandomParameters) {
+        //update parameters to reflect new updates
+        for (const [paramName, value] of Object.entries(stintRandomParameters[_randomId])) {
+          console.log("updated " + paramName + " to " + value)
+          parameters[paramName] = value
         }
-      };
+      }
+      if (randomType === "number") {
+        if (parameters) {
+          let style = parameters["Style"];
+          console.log("style is " + style);
+          return namesToFunctions[style](parameters)(input);
+          // if (style === "uniform") {
+          //   const { min, max } = parameters;
+          //   return _stint_uniformRandom(min, max)();
+          // } else if (style === "normal") {
+          //   let mean = parameters["Mean"];
+          //   let std = parameters["Std"];
+          //   return _stint_normalRandom(mean, std)();
+          // } else if (style === "perlin") {
+          //   const { min, max, x, y, z } = parameters;
+          //   return _stint_perlinRandom(min, max)(x, y, z);
+          // } else if (style === "pareto") {
+          //   let min = parameters["Min"];
+          //   let alpha = parameters["Alpha"];
+          //   return _stint_pareto(min,alpha)();
+          // }
+        }
+        return 0;
+      } else if (randomType === "substructure") {
+      } else if (randomType === "color") {
+      } else if (randomType === "threshold") {
+        const [threshold] = args;
+        return Math.random() < threshold;
+      }
+    };
 })();
