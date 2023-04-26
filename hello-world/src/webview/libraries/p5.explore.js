@@ -38,7 +38,10 @@
     const _stint_perlinRandom = function (parameters) {
         let max = parseFloat(parameters["Max"]);
         let min = parseFloat(parameters["Min"]);
-        return (x,y,z) => {return noise(x, y, z) * (max - min) + min};
+        return (input) => {
+          console.log("input2:",input,noise.apply(this,input))
+          return noise.apply(this,input) * (max - min) + min
+        };
     };
 
     const _stint_pareto = function (parameters) {
@@ -76,12 +79,13 @@
 
         let RVs = Array.apply(null, Array(gridWidth * gridHeight)).map(Number.prototype.valueOf,0);
 
-        let minVal = styleFunction(0, 0);
+        let minVal = styleFunction([0, 0]);
         let maxVal = minVal;
 
         for (var x = 0; x < gridWidth; x++) {
           for (var y = 0; y < gridHeight; y++) {
-              let v = styleFunction(x * noiseScale, y * noiseScale);
+              console.log("Input3:", [x * noiseScale, y * noiseScale])
+              let v = styleFunction([x * noiseScale, y * noiseScale]);
               console.log("random value is: " + v)
               RVs[x * gridHeight + y] = v;
               minVal = Math.min(minVal,v);
@@ -114,6 +118,7 @@
     module.exports = {_store_Random_Parameter, sampleCanvas, namesToFunctions, _stint_normalRandom, _stint_perlinRandom, _stint_uniformRandom, _stint_pareto, namesToParams}
 
     p5.prototype.explore = function(_randomId, randomType, parameters = {}, ...input) {
+      // console.log("Input1: ",input)
       if (_randomId in stintRandomParameters) {
         //update parameters to reflect new updates
         for (const [paramName, value] of Object.entries(stintRandomParameters[_randomId])) {
@@ -124,8 +129,10 @@
       if (randomType === "number") {
         if (parameters) {
           let style = parameters["Style"];
-          console.log("style is " + style);
-          return namesToFunctions[style](parameters)(input);
+          // console.log("style is " + style);
+          let out = namesToFunctions[style](parameters)(input);
+          // console.log("Output:", out);
+          return out;
           // if (style === "uniform") {
           //   const { min, max } = parameters;
           //   return _stint_uniformRandom(min, max)();
