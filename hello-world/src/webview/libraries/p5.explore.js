@@ -38,8 +38,8 @@
     const _stint_perlinRandom = function (parameters) {
         let max = parseFloat(parameters["Max"]);
         let min = parseFloat(parameters["Min"]);
-        return (input) => {
-          console.log("input2:",input,noise.apply(this,input))
+        return (...input) => {
+          // console.log("input2:",input,noise.apply(this,input))
           return noise.apply(this,input) * (max - min) + min
         };
     };
@@ -63,10 +63,15 @@
       "uniform" : ["Min","Max"],
       "normal" : ["Mean","Std"],
       "perlin" : ["Min","Max"],
-      "pareto" : ["Min","Alpha"]
+      "pareto" : ["Min","Alpha"],
+      "GPTsuggest": []
     }
 
     const sampleCanvas = function(styleFunction) {
+        console.log("styleFunction:",typeof(styleFunction))
+        if (typeof(styleFunction) === 'string') {
+          styleFunction = eval('(' + styleFunction + ')');
+        }
         var canvas = document.createElement("canvas"),
             context = canvas.getContext("2d"),
             noiseScale = 0.1, // Perlin noise scale factor
@@ -79,14 +84,14 @@
 
         let RVs = Array.apply(null, Array(gridWidth * gridHeight)).map(Number.prototype.valueOf,0);
 
-        let minVal = styleFunction([0, 0]);
+        let minVal = styleFunction(0, 0);
         let maxVal = minVal;
 
         for (var x = 0; x < gridWidth; x++) {
           for (var y = 0; y < gridHeight; y++) {
-              console.log("Input3:", [x * noiseScale, y * noiseScale])
-              let v = styleFunction([x * noiseScale, y * noiseScale]);
-              console.log("random value is: " + v)
+              // console.log("Input3:", [x * noiseScale, y * noiseScale])
+              let v = styleFunction(x * noiseScale, y * noiseScale);
+              // console.log("random value is: " + v)
               RVs[x * gridHeight + y] = v;
               minVal = Math.min(minVal,v);
               maxVal = Math.max(maxVal,v);
@@ -129,10 +134,17 @@
       if (randomType === "number") {
         if (parameters) {
           let style = parameters["Style"];
+
+          if (style === "GPTsuggest") {
+            return eval('(' + parameters.Override + ')').apply(this,input); 
+          } else {
+            return namesToFunctions[style](parameters).apply(this,input);
+          }
+
           // console.log("style is " + style);
-          let out = namesToFunctions[style](parameters)(input);
+          
           // console.log("Output:", out);
-          return out;
+          // return out;
           // if (style === "uniform") {
           //   const { min, max } = parameters;
           //   return _stint_uniformRandom(min, max)();

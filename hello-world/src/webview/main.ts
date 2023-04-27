@@ -83,7 +83,7 @@ const makeNumberGUI = function (randomId, type, parameters) {
   };
   const styleDefault = parameters.hasOwnProperty('Style') ? JSON.parse(parameters.Style) : "uniform"; // string literal
   console.log({styleDefault});
-  const dropdownOptions = ["uniform", "normal", "perlin", "pareto"];
+  const dropdownOptions = ["uniform", "normal", "perlin", "pareto","GPTsuggest"];
   settings
     .addDropDown("Style", dropdownOptions, (value) => {
       console.log(`Dropdown value changed to ${value.value}`);
@@ -101,7 +101,13 @@ const makeNumberGUI = function (randomId, type, parameters) {
       for (let prop of stintExplore.namesToParams[style]) {
         settings.addNumber(prop,sliderMin,sliderMax,propertyDefaults[prop],1, (value) => {return;})
       }
-      reloadPreview(stintExplore.namesToFunctions[value.value](parameters))
+      if (value.value === "GPTsuggest") {
+        console.log(parameters.Override)
+        reloadPreview(parameters.Override)
+      } else {
+        reloadPreview(stintExplore.namesToFunctions[value.value](parameters))
+      }
+      
 
       // if (value.value === "normal") {
       //   properties.add("Mean");
