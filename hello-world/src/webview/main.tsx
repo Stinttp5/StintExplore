@@ -7,6 +7,10 @@ import {
 import QuickSettings from "./libraries/quicksettings";
 import * as stintExplore from "./libraries/p5.explore";
 
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import StintParameters, { RandomParameters } from "./components/StintParameters";
+
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
 // syntax below.
@@ -32,18 +36,61 @@ const vscode = acquireVsCodeApi();
 
 window.addEventListener("load", main);
 
+function StintWrapper() {
+  const [randomTypes, setRandomTypes] = React.useState([]);
+  const [error, setError] = React.useState(null);
+
+  React.useEffect(() => {
+    window.addEventListener("message", (event) => {
+      const { type, payload } = event.data;
+      console.log('hey', type, payload);
+
+      if (type === "newRandomTypes") {
+        setRandomTypes(payload.map(
+          o => ({
+            ...o,
+            parameters: {
+              ...Object.fromEntries(
+                Object.entries(o.parameters).map(
+                  // @ts-ignore
+                  ([k, v]: [string, string]) => {
+                    // undoing the hack we did in extension.ts with stintNoParse
+                    console.log('awkward', k, v);
+                    const match = v.match(/^stintNoParse`(.*)`$/);
+                    if (match) {
+                      return [k, match[1]];
+                    }
+                    return [k, v];
+                  }
+                )
+              ),
+              type: eval(o.parameters.type), // it's a string literal here from the code, we need to eval it
+            },
+          })
+        ));
+      } else if (type === "stintParseError") {
+        setError(payload);
+      }
+    });
+  }, []);
+
+  const setParameters = (id: string, parameters: RandomParameters) => {
+    vscode.postMessage({
+      command: "updateParameters",
+      payload: { id, parameters: {
+        ...parameters,
+        type: `'${parameters.type}'`, // convert back to a string literal to be shoved into the code
+      }},
+    });
+  };
+
+  return <StintParameters error={error} randomTypes={randomTypes} setParameters={setParameters} />
+}
 
 // Main function that gets executed once the webview DOM loads
 function main() {
-  window.addEventListener("message", (event) => {
-    const { type, payload } = event.data;
-
-    if (type === "newRandomTypes") {
-      renderExploreParameters(payload);
-    } else if (type === "stintParseError") {
-      renderError(payload);
-    }
-  });
+  const root = createRoot(document.getElementById('root'));
+  root.render(<StintWrapper />);
 }
 
 const globalSettings = {};

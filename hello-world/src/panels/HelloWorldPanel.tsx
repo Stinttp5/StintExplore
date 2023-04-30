@@ -189,12 +189,12 @@ export class HelloWorldPanel {
     webview.onDidReceiveMessage(
       (message: any) => {
         const { command } = message;
-
+        console.log('usp', message);
         switch (command) {
           case "updateParameters":
-            const { id, settingName, changedValue } = message;
-            // console.log('usp', { id, settingName, changedValue });
-            updateStintParameters(id, settingName, changedValue);
+            const { id, parameters } = message.payload;
+            console.log('usp', { id, parameters });
+            updateStintParameters(id, parameters);
             return;
         }
       },

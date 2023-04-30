@@ -29,17 +29,24 @@ function draw() {
   let pacHeight = 100;
   let pacWidth = 100;
   let border = 20;
-  const type = explore("type", "number", { Style: "normal",Mean: 1,Std: 49 });
+  // const type = explore("type", "number", { Style: "normal",Mean: 1,Std: 49 });
+  const type = 0;
   for (let i = -8; i < 8; i++) {
     let xNudge = (pacWidth+border)*i;
     for (let j = -8; j < 8; j++) {
       let yNudge = (pacHeight+border)*j;
       if (type < 0.5) {
-        myAngle = explore("angle", "number", { Style: "perlin",Mean: 51,Std: 51 });
+        let myAngle = explore('angle', { type: 'uniform',min: canvasWidth / 2,max: stintNoParse`canvasHeight / ` });
+        // let myAngle = explore("angle", "number", { Style: "normal",Mean: 53,Std: 25,Min: 40 });
+        // console.log({myAngle});
         arc(width/2 + xNudge, height/2 + yNudge, pacWidth, pacHeight, myAngle/2, 360 - myAngle/2, PIE);
+        // arc(width/2 + xNudge, height/2 + yNudge, pacWidth, pacHeight,0, 180);
+
+        // const squareSize = explore("squareSize2", "number", { Style: "normal",Mean: 50,Std: 51 });
+        // rect(width / 2 + xNudge - squareSize / 2, height / 2 + yNudge - squareSize / 2, squareSize, squareSize);
       } else {
         // squasres!
-        const squareSize = explore("squareSize", "number", { Style: "normal",Mean: 50,Std: 51 });
+        const squareSize = explore("squareSize");
         rect(width / 2 + xNudge - squareSize / 2, height / 2 + yNudge - squareSize / 2, squareSize, squareSize);
       }
     }
