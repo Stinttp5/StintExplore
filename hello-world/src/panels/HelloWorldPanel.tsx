@@ -115,8 +115,6 @@ export class HelloWorldPanel {
     
     const p5minUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.min.js"]);
     const p5soundUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.sound.min.js"]);
-    const p5qsUri = getUri(webview, extensionUri, ["out", "libraries" , "quicksettings.js"]);
-    const p5guiUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.gui.js"]);
     const p5funcminUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.func.min.js"]);
     const p5exploreUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.explore.js"]);
 
@@ -143,8 +141,6 @@ export class HelloWorldPanel {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
 					<script src="${p5minUri}"></script>
           <script src="${p5soundUri}"></script>
-          <script src="${p5qsUri}"></script>
-          <script src="${p5guiUri}"></script>
           <script src="${p5funcminUri}"></script>
           <script src="${p5exploreUri}"></script>
           <title>Stint Explore</title>
