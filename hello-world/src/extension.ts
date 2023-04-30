@@ -32,23 +32,10 @@ const getStintCalls = debounce((document: TextDocument) => {
             `explore must be called with a string literal ID argument (at sketch.js:${node.loc?.start.line}))`
           ); // idt the loc actually works here
         }
+        console.log(randomIdNode);
         const randomId = randomIdNode.value;
 
-        const randomTypeNode = node.arguments[1];
-        if (randomTypeNode.type !== "Literal" || typeof randomTypeNode.value !== "string") {
-          throw new Error(
-            `explore must be called with a string literal type argument (parsing ${randomId})`
-          );
-        }
-
-        const randomType = randomTypeNode.value;
-        if (!["number", "substructure", "threshold", "color"].includes(randomType)) {
-          throw new Error(
-            `explore must be called with a valid type argument (parsing ${randomId}). Valid arguments are 'number', 'substructure', 'threshold', 'color'`
-          );
-        }
-
-        const randomParametersNode = node.arguments[2];
+        const randomParametersNode = node.arguments[1];
         const randomParameters: any = {};
         if (randomParametersNode && randomParametersNode.type === "ObjectExpression") {
           for (const prop of randomParametersNode.properties) {
@@ -80,7 +67,6 @@ const getStintCalls = debounce((document: TextDocument) => {
         } else {
           newRandomTypes.push({
             id: randomId,
-            type: randomType,
             parameters: randomParameters, // the values here are all STRINGS, literals from what's in the code -- depending on the type (dropdown, slider, expression textbox, etc.) we'll need to parse them in the frontend
           });
         }
@@ -96,9 +82,9 @@ const getStintCalls = debounce((document: TextDocument) => {
   }
 }, 500);
 
-export const updateStintParameters = (id: string, settingName: string, changedValue: string) => {
+export const updateStintParameters = (id: string, parameters: any) => {
   // console.log("usp???");
-  randomTypes.find((r: any) => r.id === id)!.parameters[settingName] = changedValue;
+  randomTypes.find((r: any) => r.id === id)!.parameters = parameters;
 
   const textEditor = lastActiveTextEditor!;
   const document = textEditor.document!;
@@ -118,13 +104,13 @@ export const updateStintParameters = (id: string, settingName: string, changedVa
       if (randomIdNode.type === "Literal") {
         const randomId = randomIdNode.value;
         if (randomId === id) {
-          const parametersArg = node.arguments[2];
+          const parametersArg = node.arguments[1];
           if (parametersArg) {
             console.log("found", { parametersArg });
             const loc = parametersArg.loc;
             foundLoc = loc;
           } else {
-            const loc = node.arguments[1].loc!;
+            const loc = node.arguments[0].loc!;
             foundLoc = {
               start: {
                 line: loc.end.line,
@@ -152,7 +138,7 @@ export const updateStintParameters = (id: string, settingName: string, changedVa
       .edit((editBuilder: any) => {
         editBuilder.insert(new Position(foundLoc.start.line - 1, foundLoc.start.column), ", {}");
       })
-      .then(() => updateStintParameters(id, settingName, changedValue));
+      .then(() => updateStintParameters(id, parameters));
   } else {
     textEditor.edit((editBuilder: any) => {
       editBuilder.replace(
@@ -162,7 +148,24 @@ export const updateStintParameters = (id: string, settingName: string, changedVa
         ),
         `{ ${Object.entries(randomTypes.find((r: any) => r.id === id).parameters).map(
             // @ts-ignore
-            ([ k, v ]: [ string, string ]) => `${k}: ${v}`
+            ([ k, v ]: [ string, string ]) => {
+              // here's the thing.
+              // if you're in the middle of typing, you might type something that doesn't parse yet.
+              // this breaks the whole damn thing.
+              // so if it doesn't parse, we're going to wrap it with a js custom format string -- stintNoParse`canvasWidth /`
+              // this will fail at runtime, maybe, if I remember to add a stintNoParse function. i mean it'll fail either way.
+              // but the important bit is to wrap it iff it doesn't parse.
+              // nah ok i do need to implement it so the empty thing parses to null for optional params
+
+              const tryParse = `{ a: ${v} }`;
+              try {
+                parseScript(tryParse);
+              } catch (e) {
+                return `${k}: stintNoParse\`${v}\``;
+              }
+
+              return `${k}: ${v}`;
+            }
         ).join(',')} }`
       );
     });
@@ -172,8 +175,12 @@ export const updateStintParameters = (id: string, settingName: string, changedVa
 const tryUpdateStint = () => {
   const textEditor = lastActiveTextEditor!;
   const document = textEditor?.document!;
-  if (document) getStintCalls(document); 
+  if (document) getStintCalls(document);
 };
+
+const sendUpdateSketch = debounce((text) => {
+  HelloWorldPanel.sendMessage("updateSketch", text);
+}, 16);
 
 export function activate(context: ExtensionContext) {
   // Create the show hello world command
@@ -194,6 +201,8 @@ export function activate(context: ExtensionContext) {
       const document = editor.document;
       const disposable = workspace.onDidChangeTextDocument((event) => {
         if (event.document === document) {
+          sendUpdateSketch(document.getText());
+
           // console.log('Text changed in active editor');
           // window.showInformationMessage("Text changed in active editor");
 
