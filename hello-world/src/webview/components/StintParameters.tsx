@@ -8,41 +8,41 @@ export interface RandomType {
 
 export interface UniformRandomParameters {
   type: "uniform";
-  min: number;
-  max: number;
+  min: string;
+  max: string;
 };
 
 export interface NormalRandomParameters {
   type: "normal";
-  mean: number;
-  std: number;
+  mean: string;
+  std: string;
 };
 
 export interface PerlinRandomParameters {
   type: "perlin";
-  min: number;
-  max: number;
-  x: number;
-  y?: number;
-  z?: number;
+  min: string;
+  max: string;
+  x: string;
+  y?: string;
+  z?: string;
 };
 
 export interface ParetoRandomParameters {
   type: "pareto";
-  min: number;
-  alpha: number;
+  min: string;
+  alpha: string;
 };
 
 export interface DrawableRandomParameters {
   type: "drawable";
-  min: number;
-  max: number;
-  distribution: number[];
+  min: string;
+  max: string;
+  distribution: string;
 };
 
 export interface PassthroughRandomParameters {
   type: "passthrough";
-  value: number;
+  value: string;
 };
 
 export type RandomParameters = UniformRandomParameters | NormalRandomParameters | PerlinRandomParameters | ParetoRandomParameters | DrawableRandomParameters | PassthroughRandomParameters;
