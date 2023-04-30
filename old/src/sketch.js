@@ -36,7 +36,7 @@ function draw() {
     for (let j = -8; j < 8; j++) {
       let yNudge = (pacHeight+border)*j;
       if (type < 0.5) {
-        let myAngle = explore('angle', { type: 'uniform',min: canvasWidth / 2,max: stintNoParse`canvasHeight / ` });
+        let myAngle = explore('angle', { type: 'uniform',min: canvasWidth / 2,max: stintNoParse`canvasHeight /` });
         // let myAngle = explore("angle", "number", { Style: "normal",Mean: 53,Std: 25,Min: 40 });
         // console.log({myAngle});
         arc(width/2 + xNudge, height/2 + yNudge, pacWidth, pacHeight, myAngle/2, 360 - myAngle/2, PIE);
@@ -46,7 +46,8 @@ function draw() {
         // rect(width / 2 + xNudge - squareSize / 2, height / 2 + yNudge - squareSize / 2, squareSize, squareSize);
       } else {
         // squasres!
-        const squareSize = explore("squareSize");
+        const squareSize = explore("squareSize", { type: 'passthrough',value: Math.random() });
+        const squareSize2 = explore("squareSize2");
         rect(width / 2 + xNudge - squareSize / 2, height / 2 + yNudge - squareSize / 2, squareSize, squareSize);
       }
     }

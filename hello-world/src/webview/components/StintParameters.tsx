@@ -40,12 +40,12 @@ export interface DrawableRandomParameters {
   distribution: number[];
 };
 
-export interface PassthroughRandomParmeters {
+export interface PassthroughRandomParameters {
   type: "passthrough";
   value: number;
 };
 
-export type RandomParameters = UniformRandomParameters | NormalRandomParameters | PerlinRandomParameters | ParetoRandomParameters | DrawableRandomParameters | PassthroughRandomParmeters;
+export type RandomParameters = UniformRandomParameters | NormalRandomParameters | PerlinRandomParameters | ParetoRandomParameters | DrawableRandomParameters | PassthroughRandomParameters;
 
 interface StintParametersProps {
   randomTypes: RandomType[];

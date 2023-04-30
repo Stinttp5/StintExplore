@@ -155,6 +155,7 @@ export const updateStintParameters = (id: string, parameters: any) => {
               // so if it doesn't parse, we're going to wrap it with a js custom format string -- stintNoParse`canvasWidth /`
               // this will fail at runtime, maybe, if I remember to add a stintNoParse function. i mean it'll fail either way.
               // but the important bit is to wrap it iff it doesn't parse.
+              // nah ok i do need to implement it so the empty thing parses to null for optional params
 
               const tryParse = `{ a: ${v} }`;
               try {

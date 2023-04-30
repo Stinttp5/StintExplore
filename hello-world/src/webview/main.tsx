@@ -68,6 +68,7 @@ function StintWrapper() {
             },
           })
         ));
+        setError(null);
       } else if (type === "stintParseError") {
         setError(payload);
       }

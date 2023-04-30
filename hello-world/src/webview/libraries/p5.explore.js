@@ -169,4 +169,10 @@
         return Math.random() < threshold;
       }
     };
+
+    p5.prototype.stintNoParse = function(arr) {
+      if (arr.length === 1 && arr[0] === '') return null;
+
+      throw new Error('Some random parameter could not be parsed');
+    }
 })();
