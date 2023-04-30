@@ -100,12 +100,14 @@
     return canvas
   }
 
-  p5.prototype.explore = function (_randomId, parameters = null) {
+  p5.prototype.explore = function (_randomId, parameters = null,...axes) {
     if (parameters) {
       let { type } = parameters;
 
       console.log('explore', parameters)
-      return namesToFunctions[type].apply(this, [parameters]);
+      let ret = namesToFunctions[type].apply(this, [parameters]);
+      updateIOStorage(_randomId,ret,axes);
+      return ret;
     } else {
       return 0;
     }
@@ -115,5 +117,92 @@
     if (arr.length === 1 && arr[0] === '') return null;
 
     throw new Error('Some random parameter could not be parsed');
+  };
+
+  //preview stuff
+  stintRandomIOStorage = {}
+  stintRandomMinMax = {}
+  stintRandomDegree = {}
+
+  const updateIOStorage = function(randomID,retVal,axes){
+    if (!stintRandomMinMax[randomID]) {
+      stintRandomMinMax[randomID] = [retVal,retVal];
+    } else {
+      [minVal,maxVal] = stintRandomMinMax[randomID];
+      stintRandomMinMax[randomID] = [min(minVal,retVal),max(maxVal,retVal)];
+    }
+
+    if (axes.length === 0) {
+      stintRandomDegree[randomID] = 0;
+      stintRandomIOStorage[_randomId] = (stintRandomIOStorage[_randomId] || []) + [retVal];
+    } else if (axes.length === 1) {
+      stintRandomDegree[randomID] = 1;
+      if (!(_randomId in stintRandomIOStorage)){
+        stintRandomIOStorage[_randomId] = {}
+      }
+      stintRandomIOStorage[_randomId][axes[0]] = (stintRandomIOStorage[_randomId][axes[0]] || []) + [retVal];
+    } else {
+      stintRandomDegree[randomID] = 2;
+      if (!(_randomId in stintRandomIOStorage)){
+        stintRandomIOStorage[_randomId] = {}
+      }
+      if (!(axes[0] in stintRandomIOStorage[_randomId])){
+        stintRandomIOStorage[_randomId][axes[0]] = {}
+      }
+      stintRandomIOStorage[_randomId][axes[0]][axes[1]] = retVal;
+    }
+  }
+
+  p5.prototype.resetPreview = function() {
+    stintRandomIOStorage = {}
+    stintRandomMinMax = {}
+    stintRandomDegree = {}
+  };
+
+  const sampleCanvasFromStorage = function(randomID) {
+    var canvas = document.createElement("canvas"),
+        context = canvas.getContext("2d"),
+        gridWidth = 100, // number of grid cells in the x direction
+        gridHeight = 100; // number of grid cells in the y direction
+    canvas.width = gridWidth + 100;
+    canvas.height = gridHeight + 20;
+    context.fillStyle = "black";
+    context.font = "14px Arial";
+    context.fillText("Min: " + stintRandomMinMax[randomID][0].toFixed(2) + " Max: " + stintRandomMinMax[randomID][1].toFixed(2), 0, canvas.height);
+
+    switch (stintRandomDegree[randomID]) {
+      case 0:
+        
+        break;
+      case 1:
+        gridSizeX = gridWidth / length(Object.keys(stintRandomIOStorage[randomID]));
+        for (x in enumerate(Object.keys(stintRandomIOStorage[randomID]).sort((a,b) => Number(a) - Number(b)))) {
+          gridSizeY = gridHeight / length(Object.keys(stintRandomIOStorage[randomID][x[1]]));
+          for (value in stintRandomIOStorage[randomID][x[1]]) {
+            value = (value-minVal)/(maxVal-minVal);
+            var colorValue = Math.floor(value * 255);
+            context.fillStyle = "rgb(" + colorValue + "," + colorValue + "," + colorValue + ")";
+            context.fillRect(x[0] * gridSize, y[0] * gridSize, gridSize, gridSize);
+          }
+        }
+        break;
+      case 2:
+        gridSizeX = gridWidth / length(Object.keys(stintRandomIOStorage[randomID]));
+        for (x in enumerate(Object.keys(stintRandomIOStorage[randomID]).sort((a,b) => Number(a) - Number(b)))) {
+          gridSizeY = gridHeight / length(Object.keys(stintRandomIOStorage[randomID][x[1]]));
+          for (y in enumerate(Object.keys(stintRandomIOStorage[randomID][x[1]]).sort((a,b) => Number(a) - Number(b)))) {
+            let value = stintRandomIOStorage[randomID][x[1]][y[1]];
+            value = (value-minVal)/(maxVal-minVal);
+            var colorValue = Math.floor(value * 255);
+            context.fillStyle = "rgb(" + colorValue + "," + colorValue + "," + colorValue + ")";
+            context.fillRect(x[0] * gridSize, y[0] * gridSize, gridSize, gridSize);
+          }
+        }
+        break;
+      default:
+        break;
+    }
+    
+    return canvas
   }
 })();
