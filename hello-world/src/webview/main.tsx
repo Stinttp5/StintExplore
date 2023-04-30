@@ -231,7 +231,4 @@ const handleUpdate = (id: string) => (settingName: string) => {
   }
   // console.log(id, settingName, changedValue);
   vscode.postMessage({ command: "updateParameters", id, settingName, changedValue });
-
-  stintExplore._store_Random_Parameter(id,settingName,jsValue);
-  
 }

@@ -140,7 +140,7 @@ function ParameterBox({ randomType, setParameters }: ParameterBoxProps) {
       <option value="perlin">Perlin</option>
       <option value="pareto">Pareto</option>
       <option value="drawable">Drawable</option>
-      <option value="passthrough">Passthrough</option>
+      <option value="passthrough">Expression</option>
     </select>
 
     {renderBox(cachedType, setParametersShim)}

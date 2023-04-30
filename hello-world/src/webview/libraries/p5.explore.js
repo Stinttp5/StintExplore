@@ -1,70 +1,50 @@
 (function(){
-    p5.prototype.test = function() {
-
-        return 10;
-    
-    };
-
-    const stintRandomParameters = {}
-
-    const _store_Random_Parameter = function(id, settingName, newValue) {
-      if (!(id in stintRandomParameters)){
-        stintRandomParameters[id] = {}
-      }
-      stintRandomParameters[id][settingName] = newValue
-    }
-
     const _stint_uniformRandom = function (parameters) {
-        let max = parseFloat(parameters["Max"]);
-        let min = parseFloat(parameters["Min"]);
-        // console.log("oh boy" + max + "    " + min);
-        return () => {return (Math.random() * (max - min)) + min};
-        // return () => {return max/2}
+      console.log('ufr', { parameters})
+        const { min, max } = parameters;
+        return (Math.random() * (max - min)) + min
     };
 
     const _stint_normalRandom = function (parameters) {
-        let mean = parseFloat(parameters["Mean"]);
-        let std = parseFloat(parameters["Std"]);
-        return () => {
-            let u = 0;
-            let v = 0;
-            while (u === 0) u = Math.random();
-            while (v === 0) v = Math.random();
-            return (Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v) * std) + mean;
-            // return mean
-        };
+        const { mean, std } = parameters;
+        let u = 0;
+        let v = 0;
+        while (u === 0) u = Math.random();
+        while (v === 0) v = Math.random();
+        return (Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v) * std) + mean;
     };
 
     const _stint_perlinRandom = function (parameters) {
-        let max = parseFloat(parameters["Max"]);
-        let min = parseFloat(parameters["Min"]);
-        return (...input) => {
-          // console.log("input2:",input,noise.apply(this,input))
-          return noise.apply(this,input) * (max - min) + min
-        };
+        const { min, max, x, y, z } = parameters;
+        return noise.apply(this, [x || undefined, y || undefined, z || undefined]) * (max - min) + min
     };
 
-    const _stint_pareto = function (parameters) {
-        let alpha = parseFloat(parameters["Alpha"]);
-        let min = parseFloat(parameters["Min"]);
-        return () => {
-            return min/Math.pow(Math.random(),1/alpha)
-        }
+    const _stint_paretoRandom = function (parameters) {
+        const { alpha, min } = parameters;
+        return min/Math.pow(Math.random(),1/alpha);
     }
 
-    var namesToFunctions = {
-        "uniform" : _stint_uniformRandom,
-        "normal" : _stint_normalRandom,
-        "perlin" : _stint_perlinRandom,
-        "pareto" : _stint_pareto
+    const _stint_passthrough = function (parameters) {
+        const { value } = parameters;
+        return value;
+    }
+
+    const namesToFunctions = {
+        "uniform": _stint_uniformRandom,
+        "normal": _stint_normalRandom,
+        "perlin": _stint_perlinRandom,
+        "pareto": _stint_paretoRandom,
+        "passthrough": _stint_passthrough,
     }
 
     var namesToParams = {
-      "uniform" : ["Min","Max"],
-      "normal" : ["Mean","Std"],
-      "perlin" : ["Min","Max"],
-      "pareto" : ["Min","Alpha"],
-      "GPTsuggest": []
+      "uniform": ["min", "max"],
+      "normal": ["mean", "std"],
+      "perlin": ["min", "max"],
+      "pareto": ["min", "alpha"],
+      "drawable": ["min", "max", "distribution"],
+      "passthrough": ["value"],
+      // "GPTsuggest": [] // tima: I was thinking we could implement the gpt ui just in the React component and then have it save as 'passthrough'. mostly so we don't have to store a bunch of state in the source code -- but anything works with me
     }
 
     const sampleCanvas = function(styleFunction) {
@@ -120,54 +100,17 @@
         return canvas
     }
 
-    module.exports = {_store_Random_Parameter, sampleCanvas, namesToFunctions, _stint_normalRandom, _stint_perlinRandom, _stint_uniformRandom, _stint_pareto, namesToParams}
+    // module.exports = {sampleCanvas, namesToFunctions, _stint_normalRandom, _stint_perlinRandom, _stint_uniformRandom, _stint_pareto, namesToParams}
 
-    p5.prototype.explore = function(_randomId, randomType, parameters = {}, ...input) {
-      // console.log("Input1: ",input)
-      if (_randomId in stintRandomParameters) {
-        //update parameters to reflect new updates
-        for (const [paramName, value] of Object.entries(stintRandomParameters[_randomId])) {
-          console.log("updated " + paramName + " to " + value)
-          parameters[paramName] = value
-        }
-      }
-      if (randomType === "number") {
+    p5.prototype.explore = function(_randomId, parameters = null) {
         if (parameters) {
-          let style = parameters["Style"];
+          let { type } = parameters;
 
-          if (style === "GPTsuggest") {
-            return eval('(' + parameters.Override + ')').apply(this,input); 
-          } else {
-            return namesToFunctions[style](parameters).apply(this,input);
-          }
-
-          // console.log("style is " + style);
-          
-          // console.log("Output:", out);
-          // return out;
-          // if (style === "uniform") {
-          //   const { min, max } = parameters;
-          //   return _stint_uniformRandom(min, max)();
-          // } else if (style === "normal") {
-          //   let mean = parameters["Mean"];
-          //   let std = parameters["Std"];
-          //   return _stint_normalRandom(mean, std)();
-          // } else if (style === "perlin") {
-          //   const { min, max, x, y, z } = parameters;
-          //   return _stint_perlinRandom(min, max)(x, y, z);
-          // } else if (style === "pareto") {
-          //   let min = parameters["Min"];
-          //   let alpha = parameters["Alpha"];
-          //   return _stint_pareto(min,alpha)();
-          // }
+          console.log('explore', parameters)
+          return namesToFunctions[type].apply(this, [ parameters ]);
+        } else {
+          return 0;
         }
-        return 0;
-      } else if (randomType === "substructure") {
-      } else if (randomType === "color") {
-      } else if (randomType === "threshold") {
-        const [threshold] = args;
-        return Math.random() < threshold;
-      }
     };
 
     p5.prototype.stintNoParse = function(arr) {
