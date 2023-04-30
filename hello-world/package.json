@@ -1,7 +1,7 @@
 {
-  "name": "hello-world",
-  "displayName": "hello-world",
-  "description": "A hello world sample extension to show off the Webview UI Toolkit for Visual Studio Code.",
+  "name": "p5ushi.js",
+  "displayName": "p5ushi.js",
+  "description": "we did a stint as tool creators",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.74.0"
@@ -17,16 +17,16 @@
   "contributes": {
     "commands": [
       {
-        "command": "hello-world.showHelloWorld",
-        "title": "Hello World: Show"
+        "command": "p5ushijs.open",
+        "title": "Open with p5ushi.js"
       }
     ],
     "menus": {
       "explorer/context": [
         {
           "when": "resourceLangId == javascript",
-          "command": "hello-world.showHelloWorld",
-          "group": "MyGroup"
+          "command": "p5ushijs.open",
+          "group": "p5ushi group"
         }
       ]
     }

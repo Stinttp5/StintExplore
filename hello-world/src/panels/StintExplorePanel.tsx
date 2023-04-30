@@ -1,30 +1,13 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
-import { isObject } from "lodash";
 import { updateStintParameters } from "../extension";
 
-/**
- * This class manages the state and behavior of HelloWorld webview panels.
- *
- * It contains all the data and methods for:
- *
- * - Creating and rendering HelloWorld webview panels
- * - Properly cleaning up and disposing of webview resources when the panel is closed
- * - Setting the HTML (and by proxy CSS/JavaScript) content of the webview panel
- * - Setting message listeners so data can be passed between the webview and extension
- */
-export class HelloWorldPanel {
-  public static currentPanel: HelloWorldPanel | undefined;
+export class StintExplorePanel {
+  public static currentPanel: StintExplorePanel | undefined;
   private readonly _panel: WebviewPanel;
   private _disposables: Disposable[] = [];
 
-  /**
-   * The HelloWorldPanel class private constructor (called only from the render method).
-   *
-   * @param panel A reference to the webview panel
-   * @param extensionUri The URI of the directory containing the extension
-   */
   private constructor(panel: WebviewPanel, extensionUri: Uri, sketchUri: Uri) {
     this._panel = panel;
 
@@ -46,16 +29,16 @@ export class HelloWorldPanel {
    * @param extensionUri The URI of the directory containing the extension.
    */
   public static render(extensionUri: Uri, sketchUri: Uri) {
-    if (HelloWorldPanel.currentPanel) {
+    if (StintExplorePanel.currentPanel) {
       // If the webview panel already exists reveal it
-      HelloWorldPanel.currentPanel._panel.reveal(ViewColumn.One);
+      StintExplorePanel.currentPanel._panel.reveal(ViewColumn.One);
     } else {
       // If a webview panel does not already exist create and show a new one
       const panel = window.createWebviewPanel(
         // Panel view type
-        "showHelloWorld",
+        "p5ushu.js",
         // Panel title
-        "Stint Explore",
+        "p5ushi.js",
         // The editor column the panel should be displayed in
         ViewColumn.One,
         // Extra panel configurations
@@ -66,7 +49,7 @@ export class HelloWorldPanel {
           localResourceRoots: [Uri.joinPath(extensionUri, "out")],
         }
       );
-      HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri, sketchUri);
+      StintExplorePanel.currentPanel = new StintExplorePanel(panel, extensionUri, sketchUri);
     }
   }
 
@@ -74,7 +57,7 @@ export class HelloWorldPanel {
    * Cleans up and disposes of webview resources when the webview panel is closed.
    */
   public dispose() {
-    HelloWorldPanel.currentPanel = undefined;
+    StintExplorePanel.currentPanel = undefined;
 
     // Dispose of the current webview panel
     this._panel.dispose();
@@ -89,11 +72,11 @@ export class HelloWorldPanel {
   }
 
   public static sendMessage(type: string, payload?: any) {
-    if (!HelloWorldPanel.currentPanel) {
+    if (!StintExplorePanel.currentPanel) {
       return;
     }
 
-    const panel = HelloWorldPanel.currentPanel;
+    const panel = StintExplorePanel.currentPanel;
 
     panel._panel.webview.postMessage({ type, payload });
   }
@@ -144,7 +127,7 @@ export class HelloWorldPanel {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Stint Explore</title>
+          <title>p5ushi.js</title>
           <style>
             body {
               display: flex;

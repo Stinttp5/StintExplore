@@ -34,8 +34,6 @@ function draw() {
       }
     }
   }
-
-
 }
 
 // dynamically adjust the canvas to the window
