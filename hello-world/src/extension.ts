@@ -175,8 +175,12 @@ export const updateStintParameters = (id: string, parameters: any) => {
 const tryUpdateStint = () => {
   const textEditor = lastActiveTextEditor!;
   const document = textEditor?.document!;
-  if (document) getStintCalls(document); 
+  if (document) getStintCalls(document);
 };
+
+const sendUpdateSketch = debounce((text) => {
+  HelloWorldPanel.sendMessage("updateSketch", text);
+}, 16);
 
 export function activate(context: ExtensionContext) {
   // Create the show hello world command
@@ -197,6 +201,8 @@ export function activate(context: ExtensionContext) {
       const document = editor.document;
       const disposable = workspace.onDidChangeTextDocument((event) => {
         if (event.document === document) {
+          sendUpdateSketch(document.getText());
+
           // console.log('Text changed in active editor');
           // window.showInformationMessage("Text changed in active editor");
 

@@ -118,19 +118,24 @@ export class HelloWorldPanel {
     const p5funcminUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.func.min.js"]);
     const p5exploreUri = getUri(webview, extensionUri, ["out", "libraries" , "p5.explore.js"]);
 
+    let totalScriptContents = '';
     const fs = require('fs');
-    const sketchUri2 = getUri(webview, extensionUri, ["out", "sketch.js"]);
+    for (const scriptUri of [p5minUri, p5soundUri, p5funcminUri, p5exploreUri]) {
+      const scriptContents = fs.readFileSync(scriptUri.fsPath, 'utf8');
+      totalScriptContents += scriptContents;
+    }
 
-    // File destination.txt will be created or overwritten by default.
-    fs.copyFile(sketchUri.fsPath, sketchUri2.fsPath, (err: any) => {
-      if (err) throw err;
-      console.log('source.txt was copied to destination.txt');
-    });
+    // const fs = require('fs');
+    // const sketchUri2 = getUri(webview, extensionUri, ["out", "sketch.js"]);
 
-    const test = getUri(webview,sketchUri,["."]);
-    const test2 = p5minUri;
+    // // File destination.txt will be created or overwritten by default.
+    // fs.copyFile(sketchUri.fsPath, sketchUri2.fsPath, (err: any) => {
+    //   if (err) throw err;
+    //   console.log('source.txt was copied to destination.txt');
+    // });
 
-    
+    // const test = getUri(webview,sketchUri,["."]);
+    // const test2 = p5minUri;
 
     // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
     return /*html*/ `
@@ -139,37 +144,36 @@ export class HelloWorldPanel {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-					<script src="${p5minUri}"></script>
-          <script src="${p5soundUri}"></script>
-          <script src="${p5funcminUri}"></script>
-          <script src="${p5exploreUri}"></script>
           <title>Stint Explore</title>
           <style>
-            .qs_main {
-              position: static !important; /* shh */
-              margin-bottom: 20px;
-            }
-
             body {
               display: flex;
               flex-direction: row;
+
+              width: 800px;
             }
 
-            #root {
+            #stintRoot {
               /* flex: 1; */
               width: 200px; /* yeah none of these width settings are working yikes */
               padding: 10px;
+              box-sizing: border-box;
             }
 
-            main {
+            #sketch {
+              width: 600px;
+              height: 600px;
               /* flex: 3; */
             }
           </style>
         </head>
         <body>
-          <div id="root"></div>
+          <div id="stintRoot"></div>
+          <script>
+            window.p5Includes = ${JSON.stringify(totalScriptContents)};
+          </script>
 					<script type="module" nonce="${nonce}" src="${webviewUri}"></script>
-          <script src="${sketchUri2}"></script>
+          <div id="sketch"></div>
         </body>
       </html>
     `;
@@ -185,11 +189,10 @@ export class HelloWorldPanel {
     webview.onDidReceiveMessage(
       (message: any) => {
         const { command } = message;
-        console.log('usp', message);
         switch (command) {
           case "updateParameters":
             const { id, parameters } = message.payload;
-            console.log('usp', { id, parameters });
+            // console.log('usp', { id, parameters });
             updateStintParameters(id, parameters);
             return;
         }

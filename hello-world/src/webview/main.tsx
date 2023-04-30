@@ -40,9 +40,9 @@ function StintWrapper() {
   React.useEffect(() => {
     window.addEventListener("message", (event) => {
       const { type, payload } = event.data;
-      console.log('hey', type, payload);
 
       if (type === "newRandomTypes") {
+        console.log('hey', type, payload);
         setRandomTypes(payload.map(
           o => ({
             ...o,
@@ -68,6 +68,50 @@ function StintWrapper() {
         setError(null);
       } else if (type === "stintParseError") {
         setError(payload);
+      } else if (type === "updateSketch") {
+        console.log('updating sketch');
+        const sketchTag = document.getElementById('sketch');
+        if (sketchTag) {
+          sketchTag.innerHTML = '';
+        }
+
+        // // hm obviously i hate how i'm doing this wrapper but p5 in instance mode seems to be the way to go 
+        // eval(`window.stintSketch = function (_stint_wrapper_p5) {
+        //   for (let k in _stint_wrapper_p5) {
+        //     console.log(k, _stint_wrapper_p5[k]);
+        //     // the nested eval (tm) please kill me
+        //     eval('let ' + k + ' = _stint_wrapper_p5[k];');
+        //   }
+
+        //   ${payload}
+        // ; _stint_wrapper_p5.setup = setup; _stint_wrapper_p5.draw = draw; }`);
+        // // @ts-ignore
+        // new window.p5(window.stintSketch, document.getElementById('sketch'));
+
+        // no okay doing this in instance mode is going to cause too many problems. new plan:
+        // make and destroy an iframe each time. love it
+
+        const iframe = document.createElement('iframe');
+        // holy crap thanks copilot, didn't know about srcdoc
+        // @ts-ignore
+        iframe.setAttribute('srcdoc', `
+          <html>
+            <head>
+              <script>
+                ${
+                  // @ts-ignore
+                  window.p5Includes
+                }
+              </script>
+            </head>
+            <body>
+              <script>
+                ${payload}
+              </script>
+            </body>
+          </html>`);
+        iframe.setAttribute('style', 'width: 100%; height: 100%; border: none;');
+        document.getElementById('sketch')?.appendChild(iframe);
       }
     });
   }, []);
@@ -87,27 +131,6 @@ function StintWrapper() {
 
 // Main function that gets executed once the webview DOM loads
 function main() {
-  const root = createRoot(document.getElementById('root'));
+  const root = createRoot(document.getElementById('stintRoot'));
   root.render(<StintWrapper />);
-}
-
-const globalSettings = {};
-
-const handleUpdate = (id: string) => (settingName: string) => {
-  const value = globalSettings[id].getValue(settingName);
-  let changedValue = '';
-  let jsValue = '';
-  if (value.value) { // dropdown
-    changedValue = `"${value.value}"`; // add quotes, because this is a string literal
-    jsValue = `${value.value}`;
-    // check for number
-  } else if (value.toFixed) { // number
-    changedValue = value;
-    jsValue = value;
-  } else { // expression
-    changedValue = value;
-    jsValue = value;
-  }
-  // console.log(id, settingName, changedValue);
-  vscode.postMessage({ command: "updateParameters", id, settingName, changedValue });
 }
