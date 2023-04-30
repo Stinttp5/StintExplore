@@ -44,19 +44,20 @@ function DrawableRandomParameterBox({ parameters, setParameters }: DrawableRando
         });
       }} />
     </div>
-    <div style={{display: 'flex', flexDirection: 'row', width: 160}}
+    <div style={{display: 'flex', flexDirection: 'row', width: 160, padding: 2, backgroundColor: '#333' }}
       onMouseDown={e => {
         e.preventDefault();
       }}
     >
       {distribution.map(
         (value, index) => (
-          <div key={index} style={{ height: DISTRIBUTION_HEIGHT, width: 16, backgroundColor: '#333' }}
+          <div key={index} style={{ height: DISTRIBUTION_HEIGHT, width: 16 }}
             onMouseMove={e => {
               if (e.buttons === 1) {
                 const rect = e.currentTarget.getBoundingClientRect();
                 const y = e.clientY - rect.top;
-                const newValue = Math.max(0, Math.min(1, 1 - y / DISTRIBUTION_HEIGHT));
+                let newValue = Math.max(0, Math.min(1, 1 - y / DISTRIBUTION_HEIGHT));
+                if (newValue < 0.02) newValue = 0; // just to make sure it's possible to zero out if you want to
                 const newDistribution = [...distribution];
                 newDistribution[index] = newValue;
                 setParameters({
@@ -69,7 +70,8 @@ function DrawableRandomParameterBox({ parameters, setParameters }: DrawableRando
             <div key={index} style={{
               height: value * DISTRIBUTION_HEIGHT,
               width: 12,
-              margin: 2,
+              marginLeft: 2,
+              marginRight: 2,   // careful with margins on these bc it can change the compuation above
               marginTop: (1 - value) * DISTRIBUTION_HEIGHT,
               backgroundColor: '#ddd',
             }}>

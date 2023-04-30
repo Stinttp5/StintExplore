@@ -59,8 +59,14 @@
       index++;
     }
 
-    // finally, we return the value at that index
-    return min + (max - min) * index / distribution.length;
+    // console.log({ cumulativeDistribution, randomValue, index });
+
+    const minAllowed = index / distribution.length * (max - min) + min;
+    const maxAllowed = (index + 1) / distribution.length * (max - min) + min;
+
+    // console.log({ minAllowed, maxAllowed });
+
+    return Math.random() * (maxAllowed - minAllowed) + minAllowed;
 
     // lol i didn't write any of those comments or any of that code, thanks copilot
   };
