@@ -52,7 +52,7 @@ function StintWrapper() {
                   // @ts-ignore
                   ([k, v]: [string, string]) => {
                     // undoing the hack we did in extension.ts with stintNoParse
-                    console.log('awkward', k, v);
+                    // console.log('awkward', k, v);
                     const match = v.match(/^stintNoParse`(.*)`$/);
                     if (match) {
                       return [k, match[1]];
