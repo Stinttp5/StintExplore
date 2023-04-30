@@ -1,5 +1,5 @@
 import { commands, window, workspace, ExtensionContext, Uri, Range, Position } from "vscode";
-import { HelloWorldPanel } from "./panels/HelloWorldPanel";
+import { StintExplorePanel } from "./panels/StintExplorePanel";
 
 import { debounce } from "lodash";
 import { TextDocument } from "vscode";
@@ -75,10 +75,10 @@ const getStintCalls = debounce((document: TextDocument) => {
 
     console.log(newRandomTypes);
     randomTypes = newRandomTypes;
-    HelloWorldPanel.sendMessage("newRandomTypes", newRandomTypes);
+    StintExplorePanel.sendMessage("newRandomTypes", newRandomTypes);
   } catch (e: any) {
     console.error(e);
-    HelloWorldPanel.sendMessage("stintParseError", e.message);
+    StintExplorePanel.sendMessage("stintParseError", e.message);
   }
 }, 500);
 
@@ -179,15 +179,15 @@ const tryUpdateStint = () => {
 };
 
 const sendUpdateSketch = debounce((text) => {
-  HelloWorldPanel.sendMessage("updateSketch", text);
+  StintExplorePanel.sendMessage("updateSketch", text);
 }, 16);
 
 export function activate(context: ExtensionContext) {
-  // Create the show hello world command
-  const showHelloWorldCommand = commands.registerCommand(
-    "hello-world.showHelloWorld",
+  // Create the show 'show' command
+  const showp5ushiCommand = commands.registerCommand(
+    "p5ushijs.open",
     (uri: Uri) => {
-      HelloWorldPanel.render(context.extensionUri, uri);
+      StintExplorePanel.render(context.extensionUri, uri);
     }
   );
 
@@ -214,5 +214,5 @@ export function activate(context: ExtensionContext) {
   });
 
   // Add command to the extension context
-  context.subscriptions.push(showHelloWorldCommand);
+  context.subscriptions.push(showp5ushiCommand);
 }
