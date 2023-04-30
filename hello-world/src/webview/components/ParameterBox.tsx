@@ -129,6 +129,9 @@ function ParameterBox({ randomType, setParameters }: ParameterBoxProps) {
           randomType.id,
           // @ts-ignore
           {
+            ...cachedType.parameters, // this will pollute the parameters over time as we change distributions, but it means:
+            // a. we get to save the parameters of the previous distribution in case the user wants to switch back
+            // b. if there are parameters with matching names (min, max), they'll be preserved
             type: newType,
           },
         );

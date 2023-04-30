@@ -19,6 +19,58 @@
     return noise.apply(this, [x || undefined, y || undefined, z || undefined]) * (max - min) + min
   };
 
+  const _stint_drawableRandom = function (parameters) {
+    let { min, max, distribution } = parameters;
+
+    min = min || 0;
+    max = max || 1;
+
+    if (!distribution || !distribution.length) {
+      return min;
+    }
+
+    // first, we normalize the distribution
+    // so that it sums to 1
+    let sum = 0;
+    for (let i = 0; i < distribution.length; i++) {
+      sum += distribution[i];
+    }
+    for (let i = 0; i < distribution.length; i++) {
+      distribution[i] /= sum;
+    }
+
+    // distribution is a histogram array that sums to 1
+    // we want to sample from this distribution
+    // so we need to find the cumulative distribution
+    // and then sample from that
+
+    // first, we find the cumulative distribution
+    const cumulativeDistribution = [];
+    let cumulativeSum = 0;
+    for (let i = 0; i < distribution.length; i++) {
+      cumulativeSum += distribution[i];
+      cumulativeDistribution.push(cumulativeSum);
+    }
+
+    // then, we sample from the cumulative distribution
+    const randomValue = Math.random();
+    let index = 0;
+    while (randomValue > cumulativeDistribution[index]) {
+      index++;
+    }
+
+    // console.log({ cumulativeDistribution, randomValue, index });
+
+    const minAllowed = index / distribution.length * (max - min) + min;
+    const maxAllowed = (index + 1) / distribution.length * (max - min) + min;
+
+    // console.log({ minAllowed, maxAllowed });
+
+    return Math.random() * (maxAllowed - minAllowed) + minAllowed;
+
+    // lol i didn't write any of those comments or any of that code, thanks copilot
+  };
+
   const _stint_paretoRandom = function (parameters) {
     const { alpha, min } = parameters;
     return min / Math.pow(Math.random(), 1 / alpha);
@@ -34,6 +86,7 @@
     "normal": _stint_normalRandom,
     "perlin": _stint_perlinRandom,
     "pareto": _stint_paretoRandom,
+    "drawable": _stint_drawableRandom,
     "passthrough": _stint_passthrough,
   }
 
@@ -104,7 +157,7 @@
     if (parameters) {
       let { type } = parameters;
 
-      console.log('explore', parameters)
+      // console.log('explore', parameters)
       return namesToFunctions[type].apply(this, [parameters]);
     } else {
       return 0;

@@ -5,10 +5,8 @@ function setup() {
 
   // const bg = explore('background', { type: 'uniform',min: 0,max: 255 })
   // background(bg);
-  console.log(2);
   const bg = explore('background', { type: 'uniform',min: 0,max: 255 })
   background(bg);
-  console.log(1);
 }
 
 function draw() {
