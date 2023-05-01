@@ -6,6 +6,7 @@ import PerlinRandomParameterBox from './parameter_boxes/PerlinRandomParameterBox
 import ParetoRandomParameterBox from './parameter_boxes/ParetoRandomParameterBox';
 import DrawableRandomParameterBox from './parameter_boxes/DrawableRandomParameterBox';
 import PassthroughRandomParameterBox from './parameter_boxes/PassthroughRandomParameterBox';
+import { max } from 'lodash';
 // import {stintRandomDegree,stintRandomIOStorage,stintRandomMinMax} from "../libraries/p5.preview"
 // import {sampleCanvasFromStorage,stintRandomMinMax} from "../libraries/p5.explore"
 
@@ -207,9 +208,18 @@ function CanvasComponent({randomID,preview, ...props}) {
           context.fillStyle = "white";
           context.fillRect(0,0,gridWidth,gridHeight)
           context.fillStyle = "black";
+          var buckets = Array(10).fill(0);
           for (var entry of stintRandomIOStorage) {
             var value = (Number(entry)-minVal)/(maxVal-minVal);
-            context.fillRect(value * gridWidth, 0, 1, gridHeight);
+            if (value == 1) {
+              buckets[buckets.length-1] += 1;
+            } else {
+              buckets[Math.floor(value * buckets.length)] += 1;
+            }
+          }
+          let maxBucket = max(buckets)
+          for (var b in buckets) {
+            context.fillRect(Number(b)/buckets.length * gridWidth, gridHeight*(1 - (buckets[b]/maxBucket)), gridWidth/buckets.length, gridHeight*(buckets[b]/maxBucket));
           }
           break;
         case 1:
