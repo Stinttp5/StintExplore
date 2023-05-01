@@ -207,7 +207,7 @@ function CanvasComponent({randomID,preview, ...props}) {
         case 0:
           context.fillStyle = "white";
           context.fillRect(0,0,gridWidth,gridHeight)
-          context.fillStyle = "black";
+          context.fillStyle = "grey";
           var buckets = Array(10).fill(0);
           for (var entry of stintRandomIOStorage) {
             var value = (Number(entry)-minVal)/(maxVal-minVal);
