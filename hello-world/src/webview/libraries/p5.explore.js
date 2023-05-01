@@ -189,13 +189,19 @@
 
     if (axes.length === 0) {
       stintRandomDegree[randomID] = 0;
-      stintRandomIOStorage[randomID] = (stintRandomIOStorage[randomID] || []) + [retVal];
+      if (!stintRandomIOStorage[randomID]) {
+        stintRandomIOStorage[randomID] = []
+      }
+      stintRandomIOStorage[randomID].push(retVal)
     } else if (axes.length === 1) {
       stintRandomDegree[randomID] = 1;
       if (!(randomID in stintRandomIOStorage)){
         stintRandomIOStorage[randomID] = {}
       }
-      stintRandomIOStorage[randomID][axes[0]] = (stintRandomIOStorage[randomID][axes[0]] || []) + [retVal];
+      if (!stintRandomIOStorage[randomID][axes[0]]) {
+        stintRandomIOStorage[randomID][axes[0]] = []
+      }
+      stintRandomIOStorage[randomID][axes[0]].push(retVal);
     } else {
       stintRandomDegree[randomID] = 2;
       if (!(randomID in stintRandomIOStorage)){
@@ -203,6 +209,9 @@
       }
       if (!(axes[0] in stintRandomIOStorage[randomID])){
         stintRandomIOStorage[randomID][axes[0]] = {}
+      }
+      if (!stintRandomIOStorage[randomID][axes[0]][axes[1]]) {
+        stintRandomIOStorage[randomID][axes[0]][axes[1]] = 0
       }
       stintRandomIOStorage[randomID][axes[0]][axes[1]] = retVal;
     }
