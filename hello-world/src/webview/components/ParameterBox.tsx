@@ -173,6 +173,7 @@ function CanvasComponent({randomID,preview, ...props}) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    if (preview == null) return;
     let stintRandomDegree = preview.degree[randomID];
     let stintRandomIOStorage = preview.storage[randomID];
     let stintRandomMinMax = preview.minMax[randomID];
@@ -182,68 +183,78 @@ function CanvasComponent({randomID,preview, ...props}) {
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
 
-    // Draw on the canvas using the 2D context
-    let gridWidth = 100; // number of grid cells in the x direction
-    let gridHeight = 100; // number of grid cells in the y direction
-    canvas.width = gridWidth + 100;
-    canvas.height = gridHeight + 20;
-    context.fillStyle = "white";
-    context.font = "14px Arial";
-    context.fillText("Min: " + stintRandomMinMax[0].toFixed(2) + " Max: " + stintRandomMinMax[1].toFixed(2), 0, canvas.height);
+    if (stintRandomMinMax[0] == stintRandomMinMax[1]) {
+      canvas.width = 100;
+      canvas.height = 20;
+      context.fillStyle = "white";
+      context.font = "14px Arial";
+      context.fillText("Value: " + stintRandomMinMax[0].toFixed(2), 0, canvas.height);
+    } else {
+      // Draw on the canvas using the 2D context
+      let gridWidth = 100; // number of grid cells in the x direction
+      let gridHeight = 100; // number of grid cells in the y direction
+      canvas.width = gridWidth + 100;
+      canvas.height = gridHeight + 20;
+      context.fillStyle = "white";
+      context.font = "14px Arial";
+      context.fillText("Min: " + stintRandomMinMax[0].toFixed(2) + " Max: " + stintRandomMinMax[1].toFixed(2), 0, canvas.height);
 
-    let minVal = stintRandomMinMax[0];
-    let maxVal = stintRandomMinMax[1];
+      let minVal = stintRandomMinMax[0];
+      let maxVal = stintRandomMinMax[1];
 
-    switch (stintRandomDegree) {
-      case 0:
-        context.fillStyle = "white";
-        context.fillRect(0,0,gridWidth,gridHeight)
-        context.fillStyle = "black";
-        for (var entry of stintRandomIOStorage) {
-          var value = (Number(entry)-minVal)/(maxVal-minVal);
-          context.fillRect(value * gridWidth, 0, 1, gridHeight);
-        }
-        break;
-      case 1:
-        var gridSizeX = gridWidth / Object.keys(stintRandomIOStorage).length;
-        var xind = 0;
-        console.log("!!!!!!", Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b)));
-        for (var x of Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b))) {
-          console.log("!!!",x,stintRandomIOStorage[x]);
-          var gridSizeY = gridHeight / Object.keys(stintRandomIOStorage[x]).length;
-          var yind = 0;
-          for (var entry of stintRandomIOStorage[x]) {
+      switch (stintRandomDegree) {
+        case 0:
+          context.fillStyle = "white";
+          context.fillRect(0,0,gridWidth,gridHeight)
+          context.fillStyle = "black";
+          for (var entry of stintRandomIOStorage) {
             var value = (Number(entry)-minVal)/(maxVal-minVal);
-            var colorValue = Math.floor(value * 255);
-            context.fillStyle = "rgb(" + colorValue + "," + colorValue + "," + colorValue + ")";
-            context.fillRect(xind * gridSizeX, yind * gridSizeY, gridSizeX, gridSizeY);
-            yind += 1;
+            context.fillRect(value * gridWidth, 0, 1, gridHeight);
           }
-          xind += 1;
-        }
-        break;
-      case 2:
-        gridSizeX = gridWidth / Object.keys(stintRandomIOStorage).length;
-        var xind = 0;
-        console.log("!!!!!!", Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b)));
-        for (var x of Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b))) {
-          console.log("!!!",x,stintRandomIOStorage[x]);
-          gridSizeY = gridHeight / Object.keys(stintRandomIOStorage[x]).length;
-          var yind = 0;
-          for (var y of Object.keys(stintRandomIOStorage[x]).sort((a,b) => Number(a) - Number(b))) {
-            var value = Number(stintRandomIOStorage[x][y]);
-            value = (value-minVal)/(maxVal-minVal);
-            var colorValue = Math.floor(value * 255);
-            context.fillStyle = "rgb(" + colorValue + "," + colorValue + "," + colorValue + ")";
-            context.fillRect(xind * gridSizeX, yind * gridSizeY, gridSizeX, gridSizeY);
-            yind += 1;
+          break;
+        case 1:
+          var gridSizeX = gridWidth / Object.keys(stintRandomIOStorage).length;
+          var xind = 0;
+          console.log("!!!!!!", Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b)));
+          for (var x of Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b))) {
+            console.log("!!!",x,stintRandomIOStorage[x]);
+            var gridSizeY = gridHeight / Object.keys(stintRandomIOStorage[x]).length;
+            var yind = 0;
+            for (var entry of stintRandomIOStorage[x]) {
+              var value = (Number(entry)-minVal)/(maxVal-minVal);
+              var colorValue = Math.floor(value * 255);
+              context.fillStyle = "rgb(" + colorValue + "," + colorValue + "," + colorValue + ")";
+              context.fillRect(xind * gridSizeX, yind * gridSizeY, gridSizeX, gridSizeY);
+              yind += 1;
+            }
+            xind += 1;
           }
-          xind += 1;
-        }
-        break;
-      default:
-        break;
+          break;
+        case 2:
+          gridSizeX = gridWidth / Object.keys(stintRandomIOStorage).length;
+          var xind = 0;
+          console.log("!!!!!!", Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b)));
+          for (var x of Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b))) {
+            console.log("!!!",x,stintRandomIOStorage[x]);
+            gridSizeY = gridHeight / Object.keys(stintRandomIOStorage[x]).length;
+            var yind = 0;
+            for (var y of Object.keys(stintRandomIOStorage[x]).sort((a,b) => Number(a) - Number(b))) {
+              var value = Number(stintRandomIOStorage[x][y]);
+              value = (value-minVal)/(maxVal-minVal);
+              var colorValue = Math.floor(value * 255);
+              context.fillStyle = "rgb(" + colorValue + "," + colorValue + "," + colorValue + ")";
+              context.fillRect(xind * gridSizeX, yind * gridSizeY, gridSizeX, gridSizeY);
+              yind += 1;
+            }
+            xind += 1;
+          }
+          break;
+        default:
+          break;
+      }
     }
+
+    
   }, [randomID,preview]);
 
   return (
