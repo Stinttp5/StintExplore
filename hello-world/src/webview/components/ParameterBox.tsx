@@ -196,15 +196,23 @@ function CanvasComponent({randomID,preview, ...props}) {
 
     switch (stintRandomDegree) {
       case 0:
-        
+        context.fillStyle = "white";
+        context.fillRect(0,0,gridWidth,gridHeight)
+        context.fillStyle = "black";
+        for (var entry of stintRandomIOStorage) {
+          var value = (Number(entry)-minVal)/(maxVal-minVal);
+          context.fillRect(value * gridWidth, 0, 1, gridHeight);
+        }
         break;
       case 1:
         var gridSizeX = gridWidth / Object.keys(stintRandomIOStorage).length;
         var xind = 0;
+        console.log("!!!!!!", Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b)));
         for (var x of Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b))) {
+          console.log("!!!",x,stintRandomIOStorage[x]);
           var gridSizeY = gridHeight / Object.keys(stintRandomIOStorage[x]).length;
           var yind = 0;
-          for (var entry in stintRandomIOStorage[x]) {
+          for (var entry of stintRandomIOStorage[x]) {
             var value = (Number(entry)-minVal)/(maxVal-minVal);
             var colorValue = Math.floor(value * 255);
             context.fillStyle = "rgb(" + colorValue + "," + colorValue + "," + colorValue + ")";
