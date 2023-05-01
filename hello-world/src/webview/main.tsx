@@ -36,9 +36,11 @@ window.addEventListener("load", main);
 function StintWrapper() {
   const [randomTypes, setRandomTypes] = React.useState([]);
   const [error, setError] = React.useState(null);
+  const [preview, setPreview] = React.useState(null);
 
   React.useEffect(() => {
     window.addEventListener("message", (event) => {
+      // console.log("inside log:",event)
       const { type, payload } = event.data;
 
       if (type === "newRandomTypes") {
@@ -112,6 +114,9 @@ function StintWrapper() {
           </html>`);
         iframe.setAttribute('style', 'width: 100%; height: 100%; border: none;');
         document.getElementById('sketch')?.appendChild(iframe);
+      } else if (event.data.type === "PreviewData") {
+        console.log("receivedPreviewData",payload);
+        setPreview(payload);
       }
     });
   }, []);
@@ -126,7 +131,7 @@ function StintWrapper() {
     });
   };
 
-  return <StintParameters error={error} randomTypes={randomTypes} setParameters={setParameters} />
+  return <StintParameters error={error} randomTypes={randomTypes} setParameters={setParameters} preview={preview}/>
 }
 
 // Main function that gets executed once the webview DOM loads

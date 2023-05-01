@@ -49,11 +49,12 @@ export type RandomParameters = UniformRandomParameters | NormalRandomParameters 
 
 interface StintParametersProps {
   randomTypes: RandomType[];
+  preview: any;
   setParameters: (id: string, parameters: RandomParameters) => void;
   error: string | null;
 }
 
-function StintParameters({ randomTypes, setParameters, error }: StintParametersProps) {
+function StintParameters({ randomTypes, setParameters, error, preview }: StintParametersProps) {
   if (error) {
     return <div>
       {error}
@@ -67,7 +68,8 @@ function StintParameters({ randomTypes, setParameters, error }: StintParametersP
           <ParameterBox
             key={randomType.id}
             randomType={randomType}
-            setParameters={setParameters} />
+            setParameters={setParameters} 
+            preview={preview}/>
       )
     }
   </div>;

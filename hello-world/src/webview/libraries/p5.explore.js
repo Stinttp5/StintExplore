@@ -153,6 +153,8 @@
     return canvas
   }
 
+  
+
   p5.prototype.explore = function (_randomId, parameters = null,...axes) {
     if (parameters) {
       let { type } = parameters;
@@ -173,36 +175,36 @@
   };
 
   //preview stuff
-  stintRandomIOStorage = {}
-  stintRandomMinMax = {}
-  stintRandomDegree = {}
+  let stintRandomIOStorage = {}
+  let stintRandomMinMax = {}
+  let stintRandomDegree = {}
 
   const updateIOStorage = function(randomID,retVal,axes){
     if (!stintRandomMinMax[randomID]) {
       stintRandomMinMax[randomID] = [retVal,retVal];
     } else {
-      [minVal,maxVal] = stintRandomMinMax[randomID];
+      const [minVal,maxVal] = stintRandomMinMax[randomID];
       stintRandomMinMax[randomID] = [min(minVal,retVal),max(maxVal,retVal)];
     }
 
     if (axes.length === 0) {
       stintRandomDegree[randomID] = 0;
-      stintRandomIOStorage[_randomId] = (stintRandomIOStorage[_randomId] || []) + [retVal];
+      stintRandomIOStorage[randomID] = (stintRandomIOStorage[randomID] || []) + [retVal];
     } else if (axes.length === 1) {
       stintRandomDegree[randomID] = 1;
-      if (!(_randomId in stintRandomIOStorage)){
-        stintRandomIOStorage[_randomId] = {}
+      if (!(randomID in stintRandomIOStorage)){
+        stintRandomIOStorage[randomID] = {}
       }
-      stintRandomIOStorage[_randomId][axes[0]] = (stintRandomIOStorage[_randomId][axes[0]] || []) + [retVal];
+      stintRandomIOStorage[randomID][axes[0]] = (stintRandomIOStorage[randomID][axes[0]] || []) + [retVal];
     } else {
       stintRandomDegree[randomID] = 2;
-      if (!(_randomId in stintRandomIOStorage)){
-        stintRandomIOStorage[_randomId] = {}
+      if (!(randomID in stintRandomIOStorage)){
+        stintRandomIOStorage[randomID] = {}
       }
-      if (!(axes[0] in stintRandomIOStorage[_randomId])){
-        stintRandomIOStorage[_randomId][axes[0]] = {}
+      if (!(axes[0] in stintRandomIOStorage[randomID])){
+        stintRandomIOStorage[randomID][axes[0]] = {}
       }
-      stintRandomIOStorage[_randomId][axes[0]][axes[1]] = retVal;
+      stintRandomIOStorage[randomID][axes[0]][axes[1]] = retVal;
     }
   }
 
@@ -211,6 +213,19 @@
     stintRandomMinMax = {}
     stintRandomDegree = {}
   };
+
+  p5.prototype.sendPreviewData = function() {
+    console.log("sending preview message");
+    var obj = {
+      type: "PreviewData",
+      payload: {
+        degree: stintRandomDegree,
+        minMax: stintRandomMinMax,
+        storage: stintRandomIOStorage
+      }
+    }
+    window.parent.postMessage(obj,"*");
+  }
 
   const sampleCanvasFromStorage = function(randomID) {
     var canvas = document.createElement("canvas"),
@@ -258,4 +273,5 @@
     
     return canvas
   }
+  module.exports = {sampleCanvasFromStorage, stintRandomMinMax}
 })();

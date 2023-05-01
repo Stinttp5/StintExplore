@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RandomParameters, RandomType } from './StintParameters';
 import UniformRandomParameterBox from './parameter_boxes/UniformRandomParameterBox';
 import NormalRandomParameterBox from './parameter_boxes/NormalRandomParameterBox';
@@ -6,11 +6,13 @@ import PerlinRandomParameterBox from './parameter_boxes/PerlinRandomParameterBox
 import ParetoRandomParameterBox from './parameter_boxes/ParetoRandomParameterBox';
 import DrawableRandomParameterBox from './parameter_boxes/DrawableRandomParameterBox';
 import PassthroughRandomParameterBox from './parameter_boxes/PassthroughRandomParameterBox';
+// import {stintRandomDegree,stintRandomIOStorage,stintRandomMinMax} from "../libraries/p5.preview"
+// import {sampleCanvasFromStorage,stintRandomMinMax} from "../libraries/p5.explore"
 
 interface ParameterBoxProps {
   randomType: RandomType;
   setParameters: (id: string, parameters: RandomParameters) => void;
-
+  preview: any;
   key: string; // didn't think i needed this??
 }
 
@@ -97,9 +99,9 @@ const renderBox = (randomType: RandomType, setParameters: (id: string, parameter
   }
 }
 
-function ParameterBox({ randomType, setParameters }: ParameterBoxProps) {
+function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps) {
   const [cachedType, setCachedType] = useState(randomType);
-
+  console.log("UPDATING BOX SDFGHJKJHGFDFGHJKJHGFDFGHJKLKJHGFDFGHJKJHGF")
   useEffect(() => {
     if (randomType !== cachedType) {
       setCachedType(randomType);
@@ -145,9 +147,54 @@ function ParameterBox({ randomType, setParameters }: ParameterBoxProps) {
       <option value="drawable">Drawable</option>
       <option value="passthrough">Expression</option>
     </select>
+    
 
     {renderBox(cachedType, setParametersShim)}
+    <div>
+      <CanvasComponent randomID={randomType.id} preview={preview}/>
+    </div>
   </div>;
+}
+
+// let stintRandomIOStorage = {}
+// let stintRandomMinMax = {}
+// let stintRandomDegree = {}
+
+// window.addEventListener("message",(event) => {
+//   if (event.data.type === "PreviewData") {
+//     console.log("got preview message", event.data);
+//     stintRandomDegree = event.data.payload.degree;
+//     stintRandomIOStorage = event.data.payload.storage;
+//     stintRandomMinMax = event.data.payload.minMax;
+//   }
+// })
+
+function CanvasComponent({randomID,preview, ...props}) {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    let stintRandomDegree = preview.degree[randomID];
+    let stintRandomIOStorage = preview.storage[randomID];
+    let stintRandomMinMax = preview.minMax[randomID];
+    console.log("randomID is",randomID,"preview is",preview.minMax[randomID])
+    if (stintRandomDegree == null || stintRandomIOStorage == null || stintRandomMinMax == null) return;
+
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+
+    // Draw on the canvas using the 2D context
+    let gridWidth = 100; // number of grid cells in the x direction
+    let gridHeight = 100; // number of grid cells in the y direction
+    canvas.width = gridWidth + 100;
+    canvas.height = gridHeight + 20;
+    context.fillStyle = "white";
+    context.font = "14px Arial";
+    context.fillText("Min: " + stintRandomMinMax[0].toFixed(2) + " Max: " + stintRandomMinMax[1].toFixed(2), 0, canvas.height);
+  }, [randomID,preview]);
+
+  return (
+    <canvas ref={canvasRef} {...props} />
+  );
 }
 
 export default ParameterBox;
