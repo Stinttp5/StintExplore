@@ -208,7 +208,7 @@ function CanvasComponent({randomID,preview, ...props}) {
           context.fillStyle = "white";
           context.fillRect(0,0,gridWidth,gridHeight)
           context.fillStyle = "grey";
-          var buckets = Array(10).fill(0);
+          var buckets = Array(10).fill(0); //TODO: is there a good way to decide bucket resolution?
           for (var entry of stintRandomIOStorage) {
             var value = (Number(entry)-minVal)/(maxVal-minVal);
             if (value == 1) {
@@ -228,15 +228,30 @@ function CanvasComponent({randomID,preview, ...props}) {
           console.log("!!!!!!", Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b)));
           for (var x of Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b))) {
             console.log("!!!",x,stintRandomIOStorage[x]);
-            var gridSizeY = gridHeight / Object.keys(stintRandomIOStorage[x]).length;
-            var yind = 0;
+            var buckets = Array(10).fill(0);
             for (var entry of stintRandomIOStorage[x]) {
               var value = (Number(entry)-minVal)/(maxVal-minVal);
-              var colorValue = Math.floor(value * 255);
-              context.fillStyle = "rgb(" + colorValue + "," + colorValue + "," + colorValue + ")";
-              context.fillRect(xind * gridSizeX, yind * gridSizeY, gridSizeX, gridSizeY);
-              yind += 1;
+              if (value == 1) {
+                buckets[buckets.length-1] += 1;
+              } else {
+                buckets[Math.floor(value * buckets.length)] += 1;
+              }
             }
+            let maxBucket = max(buckets)
+            for (var b in buckets) {
+              var colorValue = Math.floor((buckets[b]/maxBucket) * 255);
+              context.fillStyle = "rgb(" + colorValue + "," + colorValue + "," + colorValue + ")";
+              context.fillRect(xind * gridSizeX, gridHeight*(1 - (Number(b)/buckets.length)), gridSizeX, gridHeight/buckets.length);
+            }
+            // var gridSizeY = gridHeight / Object.keys(stintRandomIOStorage[x]).length;
+            // var yind = 0;
+            // for (var entry of stintRandomIOStorage[x]) {
+            //   var value = (Number(entry)-minVal)/(maxVal-minVal);
+            //   var colorValue = Math.floor(value * 255);
+            //   context.fillStyle = "rgb(" + colorValue + "," + colorValue + "," + colorValue + ")";
+            //   context.fillRect(xind * gridSizeX, yind * gridSizeY, gridSizeX, gridSizeY);
+            //   yind += 1;
+            // }
             xind += 1;
           }
           break;
@@ -246,7 +261,7 @@ function CanvasComponent({randomID,preview, ...props}) {
           console.log("!!!!!!", Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b)));
           for (var x of Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b))) {
             console.log("!!!",x,stintRandomIOStorage[x]);
-            gridSizeY = gridHeight / Object.keys(stintRandomIOStorage[x]).length;
+            var gridSizeY = gridHeight / Object.keys(stintRandomIOStorage[x]).length;
             var yind = 0;
             for (var y of Object.keys(stintRandomIOStorage[x]).sort((a,b) => Number(a) - Number(b))) {
               var value = Number(stintRandomIOStorage[x][y]);
