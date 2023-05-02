@@ -45,7 +45,12 @@ export interface PassthroughRandomParameters {
   value: string;
 };
 
-export type RandomParameters = UniformRandomParameters | NormalRandomParameters | PerlinRandomParameters | ParetoRandomParameters | DrawableRandomParameters | PassthroughRandomParameters;
+export interface GPTSuggestRandomParameters {
+  type: "gptsuggest";
+  value: string;
+  sourceCodeWithHole: string;
+}
+export type RandomParameters = UniformRandomParameters | NormalRandomParameters | PerlinRandomParameters | ParetoRandomParameters | DrawableRandomParameters | PassthroughRandomParameters | GPTSuggestRandomParameters;
 
 interface StintParametersProps {
   randomTypes: RandomType[];

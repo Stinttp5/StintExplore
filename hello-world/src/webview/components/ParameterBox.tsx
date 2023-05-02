@@ -6,6 +6,7 @@ import PerlinRandomParameterBox from './parameter_boxes/PerlinRandomParameterBox
 import ParetoRandomParameterBox from './parameter_boxes/ParetoRandomParameterBox';
 import DrawableRandomParameterBox from './parameter_boxes/DrawableRandomParameterBox';
 import PassthroughRandomParameterBox from './parameter_boxes/PassthroughRandomParameterBox';
+import GPTSuggestRandomParameterBox from './parameter_boxes/GPTSuggestRandomParameterBox';
 import { max } from 'lodash';
 // import {stintRandomDegree,stintRandomIOStorage,stintRandomMinMax} from "../libraries/p5.preview"
 // import {sampleCanvasFromStorage,stintRandomMinMax} from "../libraries/p5.explore"
@@ -90,7 +91,20 @@ const renderBox = (randomType: RandomType, setParameters: (id: string, parameter
           },
         )} />
     );
-  } else {
+  } else if (randomType.parameters.type === "gptsuggest") {
+    // console.log("gpt value", randomType.parameters.value)
+    return (
+      <GPTSuggestRandomParameterBox
+        parameters={randomType.parameters}
+        setParameters={(params) =>
+          setParameters(randomType.id, {
+            ...params,
+            type: "gptsuggest",
+          })
+        }
+      />
+    );
+} else {
     // force typescript to error if this is reachable
     const _exhaustiveCheck: never = randomType.parameters;
 
@@ -147,6 +161,7 @@ function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps)
       <option value="pareto">Pareto</option>
       <option value="drawable">Drawable</option>
       <option value="passthrough">Expression</option>
+      <option value="gptsuggest">GPT Suggestion</option>
     </select>
     
 
