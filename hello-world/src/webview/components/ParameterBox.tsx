@@ -6,6 +6,7 @@ import PerlinRandomParameterBox from './parameter_boxes/PerlinRandomParameterBox
 import ParetoRandomParameterBox from './parameter_boxes/ParetoRandomParameterBox';
 import DrawableRandomParameterBox from './parameter_boxes/DrawableRandomParameterBox';
 import PassthroughRandomParameterBox from './parameter_boxes/PassthroughRandomParameterBox';
+import GPTSuggestRandomParameterBox from './parameter_boxes/GPTSuggestRandomParameterBox';
 import { max, min } from 'lodash';
 // import {stintRandomDegree,stintRandomIOStorage,stintRandomMinMax} from "../libraries/p5.preview"
 // import {sampleCanvasFromStorage,stintRandomMinMax} from "../libraries/p5.explore"
@@ -15,9 +16,10 @@ interface ParameterBoxProps {
   setParameters: (id: string, parameters: RandomParameters) => void;
   preview: any;
   key: string; // didn't think i needed this??
+  sourceCode: string;
 }
 
-const renderBox = (randomType: RandomType, setParameters: (id: string, parameters: RandomParameters) => void) => {
+const renderBox = (randomType: RandomType, setParameters: (id: string, parameters: RandomParameters) => void, sourceCode: string) => {
   if (randomType.parameters.type === "uniform") {
     return (
       <UniformRandomParameterBox
@@ -90,7 +92,21 @@ const renderBox = (randomType: RandomType, setParameters: (id: string, parameter
           },
         )} />
     );
-  } else {
+  } else if (randomType.parameters.type === "gptsuggest") {
+    return (
+      <GPTSuggestRandomParameterBox
+        parameters={randomType.parameters}
+        setParameters={(params) =>
+          setParameters(randomType.id, {
+            ...params,
+            type: "gptsuggest",
+          })
+        }
+        sourceCode={sourceCode}
+        exploreCallId={randomType.id}
+      />
+    );
+} else {
     // force typescript to error if this is reachable
     const _exhaustiveCheck: never = randomType.parameters;
 
@@ -100,9 +116,9 @@ const renderBox = (randomType: RandomType, setParameters: (id: string, parameter
   }
 }
 
-function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps) {
+function ParameterBox({ randomType, setParameters, preview, sourceCode }: ParameterBoxProps) {
   const [cachedType, setCachedType] = useState(randomType);
-  console.log("UPDATING BOX SDFGHJKJHGFDFGHJKJHGFDFGHJKLKJHGFDFGHJKJHGF")
+  console.log("UPDATING BOX SDFGHJKJHGFDFGHJKJHGFDFGHJKLKJHGFDFGHJKJHGF",preview)
   useEffect(() => {
     if (randomType !== cachedType) {
       setCachedType(randomType);
@@ -147,10 +163,11 @@ function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps)
       <option value="pareto">Pareto</option>
       <option value="drawable">Drawable</option>
       <option value="passthrough">Expression</option>
+      <option value="gptsuggest">GPT Suggestion</option>
     </select>
     
 
-    {renderBox(cachedType, setParametersShim)}
+    {renderBox(cachedType, setParametersShim, sourceCode)}
     <div>
       <CanvasComponent randomID={randomType.id} preview={preview}/>
     </div>
