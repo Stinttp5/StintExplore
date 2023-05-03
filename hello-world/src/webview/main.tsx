@@ -37,15 +37,18 @@ function StintWrapper() {
   const [randomTypes, setRandomTypes] = React.useState([]);
   const [error, setError] = React.useState(null);
   const [preview, setPreview] = React.useState(null);
+  const [sourceCode, setSourceCode] = React.useState(null);
 
   React.useEffect(() => {
     window.addEventListener("message", (event) => {
       // console.log("inside log:",event)
       const { type, payload } = event.data;
+      const { newRandomTypes, sourceCode } = payload;
+      setSourceCode(sourceCode);
 
       if (type === "newRandomTypes") {
-        console.log('hey', type, payload);
-        setRandomTypes(payload.map(
+        console.log('hey', type, newRandomTypes);
+        setRandomTypes(newRandomTypes.map(
           o => ({
             ...o,
             parameters: {
@@ -69,7 +72,7 @@ function StintWrapper() {
         ));
         setError(null);
       } else if (type === "stintParseError") {
-        setError(payload);
+        setError(newRandomTypes);
       } else if (type === "updateSketch") {
         console.log('updating sketch');
         const sketchTag = document.getElementById('sketch');
@@ -115,8 +118,8 @@ function StintWrapper() {
         iframe.setAttribute('style', 'width: 100%; height: 100%; border: none;');
         document.getElementById('sketch')?.appendChild(iframe);
       } else if (event.data.type === "PreviewData") {
-        console.log("receivedPreviewData",payload);
-        setPreview(payload);
+        console.log("receivedPreviewData",newRandomTypes);
+        setPreview(newRandomTypes);
       }
     });
   }, []);
@@ -131,7 +134,7 @@ function StintWrapper() {
     });
   };
 
-  return <StintParameters error={error} randomTypes={randomTypes} setParameters={setParameters} preview={preview}/>
+  return <StintParameters error={error} randomTypes={randomTypes} setParameters={setParameters} preview={preview} sourceCode={sourceCode} />
 }
 
 // Main function that gets executed once the webview DOM loads

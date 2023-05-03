@@ -4,12 +4,14 @@
 var myAngle = 30;
 var myColor = '#eeee00';
 
-var gui;
 
+var gui;
 function setup() {
   createCanvas(500, 500);
   noLoop();
 }
+
+
 
 function draw() {
   background(10);
@@ -18,7 +20,9 @@ function draw() {
   let pacHeight = 100;
   let pacWidth = 100;
   let border = 20;
-  const type = explore("type", { type: 'uniform',min: 1,max: 1 });
+  const type = explore("type", { type: 'gptsuggest',min: 1,max: 1,value: stintNoParse`
+    Answer:
+    {"expression": "Math.random()"}` });
   for (let i = -8; i < 8; i++) {
     let xNudge = (pacWidth + border) * i;
     for (let j = -8; j < 8; j++) {

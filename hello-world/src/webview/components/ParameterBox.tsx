@@ -16,9 +16,10 @@ interface ParameterBoxProps {
   setParameters: (id: string, parameters: RandomParameters) => void;
   preview: any;
   key: string; // didn't think i needed this??
+  sourceCode: string;
 }
 
-const renderBox = (randomType: RandomType, setParameters: (id: string, parameters: RandomParameters) => void) => {
+const renderBox = (randomType: RandomType, setParameters: (id: string, parameters: RandomParameters) => void, sourceCode: string) => {
   if (randomType.parameters.type === "uniform") {
     return (
       <UniformRandomParameterBox
@@ -92,7 +93,6 @@ const renderBox = (randomType: RandomType, setParameters: (id: string, parameter
         )} />
     );
   } else if (randomType.parameters.type === "gptsuggest") {
-    // console.log("gpt value", randomType.parameters.value)
     return (
       <GPTSuggestRandomParameterBox
         parameters={randomType.parameters}
@@ -102,6 +102,8 @@ const renderBox = (randomType: RandomType, setParameters: (id: string, parameter
             type: "gptsuggest",
           })
         }
+        sourceCode={sourceCode}
+        exploreCallId={randomType.id}
       />
     );
 } else {
@@ -114,7 +116,7 @@ const renderBox = (randomType: RandomType, setParameters: (id: string, parameter
   }
 }
 
-function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps) {
+function ParameterBox({ randomType, setParameters, preview, sourceCode }: ParameterBoxProps) {
   const [cachedType, setCachedType] = useState(randomType);
   console.log("UPDATING BOX SDFGHJKJHGFDFGHJKJHGFDFGHJKLKJHGFDFGHJKJHGF")
   useEffect(() => {
@@ -165,7 +167,7 @@ function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps)
     </select>
     
 
-    {renderBox(cachedType, setParametersShim)}
+    {renderBox(cachedType, setParametersShim, sourceCode)}
     <div>
       <CanvasComponent randomID={randomType.id} preview={preview}/>
     </div>

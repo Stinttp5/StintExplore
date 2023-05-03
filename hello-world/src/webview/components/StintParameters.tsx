@@ -57,9 +57,10 @@ interface StintParametersProps {
   preview: any;
   setParameters: (id: string, parameters: RandomParameters) => void;
   error: string | null;
+  sourceCode: string | null;
 }
 
-function StintParameters({ randomTypes, setParameters, error, preview }: StintParametersProps) {
+function StintParameters({ randomTypes, setParameters, error, preview, sourceCode }: StintParametersProps) {
   if (error) {
     return <div>
       {error}
@@ -74,7 +75,8 @@ function StintParameters({ randomTypes, setParameters, error, preview }: StintPa
             key={randomType.id}
             randomType={randomType}
             setParameters={setParameters} 
-            preview={preview}/>
+            preview={preview}
+            sourceCode={sourceCode ?? ''} />
       )
     }
   </div>;

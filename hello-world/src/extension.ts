@@ -12,7 +12,6 @@ let lastActiveTextEditor: any;
 
 const getStintCalls = debounce((document: TextDocument) => {
   const newRandomTypes: any[] = [];
-
   let tree;
   try {
     tree = parseScript(document.getText(), { ranges: true, loc: true });
@@ -75,7 +74,11 @@ const getStintCalls = debounce((document: TextDocument) => {
 
     console.log(newRandomTypes);
     randomTypes = newRandomTypes;
-    StintExplorePanel.sendMessage("newRandomTypes", newRandomTypes);
+    const randomTypesMetadata = {
+        newRandomTypes,
+        sourceCode: document.getText() 
+    }
+    StintExplorePanel.sendMessage("newRandomTypes", randomTypesMetadata);
   } catch (e: any) {
     console.error(e);
     StintExplorePanel.sendMessage("stintParseError", e.message);
