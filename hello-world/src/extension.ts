@@ -15,6 +15,7 @@ const getStintCalls = debounce((document: TextDocument) => {
   let tree;
   try {
     tree = parseScript(document.getText(), { ranges: true, loc: true });
+    console.log("sample", document.getText());
   } catch (e) {
     return;
   }
@@ -76,8 +77,8 @@ const getStintCalls = debounce((document: TextDocument) => {
     randomTypes = newRandomTypes;
     const randomTypesMetadata = {
         newRandomTypes,
-        sourceCode: document.getText() 
-    }
+        sourceCode: document.getText(),
+    };
     StintExplorePanel.sendMessage("newRandomTypes", randomTypesMetadata);
   } catch (e: any) {
     console.error(e);

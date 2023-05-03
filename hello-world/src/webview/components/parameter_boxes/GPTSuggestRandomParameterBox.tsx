@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GPTSuggestRandomParameters as GPTSuggestRandomParameters } from '../StintParameters';
 import generateAlternativeSuggestions from '../../../gptsuggest/api';
+import { CallMetadataTuple } from '../../../extension';
 
 interface GPTSuggestRandomParameterBoxProps {
   parameters: GPTSuggestRandomParameters;
@@ -9,7 +10,7 @@ interface GPTSuggestRandomParameterBoxProps {
   exploreCallId: string;
 }
 
-function GPTSuggestRandomParameterBox({ parameters, setParameters, sourceCode, exploreCallId}: GPTSuggestRandomParameterBoxProps) {
+function GPTSuggestRandomParameterBox({ parameters, setParameters, exploreCallId, sourceCode}: GPTSuggestRandomParameterBoxProps) {
     // reruns whenever the user selects a different dropdown option, due to remounting
     useEffect(() => {
       const fetchData = async () => {

@@ -1,14 +1,16 @@
 import axios from 'axios';
-import { parseScript } from "meriyah";
-import { visit } from "estree-util-visit";
+import { parseScript } from 'meriyah';
+import { generate } from 'astring';
+
 
 // terrible practice, please delete this after 4/9/2023
 // also feel free to replace it with your own open ai key: https://platform.openai.com/account/api-keys
 // only has 10 dollars on it
 const apiKey = "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";
 const openaiApiUrl = "https://api.openai.com/v1/completions";
-//     {"properties": {"expression": {"title": "Expression", "description": "expression that can replace the explore(${exploreId}, ...) call in the source code below", "type": "string"}}, "required": ["expression"]}
-const generatePrompt = (exploreId: string, sourceCode: string) : string => {
+
+// also unfortunately a neat little hole has to be made in the program, based on my testing (i.e. "replace the explore call with this id" failed)
+const generatePrompt = (sourceCodeWithHole: string) : string => {
     // prompt from langchain for structured output
     // can return several expressions, not just one, later
     // later say "outside of plain uniform, gaussian, poisson"
@@ -19,7 +21,7 @@ const generatePrompt = (exploreId: string, sourceCode: string) : string => {
     the object {"foo": ["bar", "baz"]} is a well-formatted instance of the schema. The object {"properties": {"foo": ["bar", "baz"]}} is not well-formatted.
     
     Here is the output schema:
-    {"properties": {"expression": {"title": "Expression", "description": "a single js expression at the specified location", "type": "string"}}, "required": ["expression"]}
+    {"properties": {"answer": {"title": "Answer", "description": "a single js expression at the specified location", "type": "string"}}, "required": ["expression"]}
 
     User Query:
     Provide an expression that returns either an integer or float that replaces <RANDOM EXPRESSION HERE> in the source code below. 
@@ -28,63 +30,59 @@ const generatePrompt = (exploreId: string, sourceCode: string) : string => {
     An example expression is random(50);
 
     The relevant section of the source code is below:
-
-// gui params
-var myAngle = 30;
-var myColor = '#eeee00';
-
-var gui;
-function setup() {
-  createCanvas(500, 500);
-  noLoop();
-}
-
-
-function draw() {
-  background(10);
-  fill(myColor);
-  angleMode(DEGREES);
-  let pacHeight = 100;
-  let pacWidth = 100;
-  let border = 20;
-  const type = <RANDOM EXPRESSION HERE>
-  for (let i = -8; i < 8; i++) {
-    let xNudge = (pacWidth + border) * i;
-    for (let j = -8; j < 8; j++) {
-      let yNudge = (pacHeight + border) * j;
-      if (type < 0.5) {
-        let myAngle = explore('angle', { type: 'uniform',min: windowWidth / 20,max: windowWidth / 2 });
-        arc(width / 2 + xNudge, height / 2 + yNudge, pacWidth, pacHeight, myAngle / 2, 360 - myAngle / 2, PIE);
-      } else {
-        // squasres!
-        const squareSize = explore("squareSize", { type: 'drawable',distribution: [1,0.55,0.05625000000000002,0.012499999999999956,0.03125,0.03749999999999998,0.03749999999999998,0.06874999999999998,0.7,0.39375000000000004],min: 10,max: 100 });
-        const squareSize2 = explore("squareSize2");
-        rect(width / 2 + xNudge - squareSize / 2, height / 2 + yNudge - squareSize / 2, squareSize, squareSize);
-      }
-    }
-  }
-}
+${sourceCodeWithHole}
     `;
     // ${sourceCode}
 };
 
-// const insertHoleInSourceCode = (sourceCode: string, exploreId: string) : string => {
-// we could alternatively just store a possible random template for each explore call and then pass it down as a prop
+// i'm going to try modifying the ast instead, so that i'm removing the explore call and inserting a string
+// basically I thought this was more scalable than prop drilling 15 different templates containing duplicates of the source code from extension.ts
+const insertHoleInSourceCode = (callId: string, sourceCode: string) : string => {
+    let tree;
+    try {
+        tree = parseScript(sourceCode, { ranges: true, loc: true });
+    } catch (e) {
+        // document was already parsed in extension.ts so this should not fail
+        throw new Error("Should be parseable: " + e);
+    }
+    // assumes the explore function is not the top level node
+    // @ts-ignore
+    const replaceNode = (node) => {
+        if (node.type === "CallExpression" && node.callee.name === "explore" && node.arguments[0].value === callId) {
+            return { type: "Literal", value: `<RANDOM EXPRESSION HERE>`};
+        }
+        for (const key in node) {
+            if(typeof node[key] === "object" && node[key] !== null) {
+                const result = replaceNode(node[key]);
+                if (result) {
+                    node[key] = result;
+                }
+            }
+        }
+        return null;
+    };
+    replaceNode(tree);
 
-const generateAlternativeExpression = async (exploreId: string, sourceCode: string) : Promise<string> => {
-    console.log('altexp', exploreId, sourceCode);
+    const modifiedSourceCode = generate(tree);
+    return modifiedSourceCode;
+};
+
+
+// const generateAlternativeExpression = async (sourceCode: string, callMetadata : CallMetadataTuple) : Promise<string> => {
+const generateAlternativeExpression = async (exploreCallId: string, sourceCode: string) : Promise<string> => {
     if (sourceCode.length === 0) {
         return 'source code is empty';
     } else if (sourceCode.length > 6000) { // arbitrary limit of ~1500 GPT tokens 
         return 'source code is too long';
     }
+    const sourceCodeWithHole = insertHoleInSourceCode(exploreCallId, sourceCode);
     try {
         const response = await axios.post(
             openaiApiUrl,
             {
                 model: "text-davinci-003",
                 // mode: "gpt-3.5-turbo",
-                prompt: generatePrompt(exploreId, sourceCode),
+                prompt: generatePrompt(sourceCodeWithHole),
                 n: 1,
                 max_tokens: 100,
                 temperature: 0.5,
@@ -96,7 +94,21 @@ const generateAlternativeExpression = async (exploreId: string, sourceCode: stri
                 },
             }
         );
-        return response.data.choices[0].text;
+        const output = response.data.choices[0].text;
+        let parsedOutput;
+        try {
+            parsedOutput = JSON.parse(output);
+            if (!parsedOutput.answer) {
+                throw new Error("No answer field in output");
+            }
+        } catch (e) {
+            console.log("Error parsing output from chatGPT: " + e);
+            return 'N/A';
+        }
+        // TODO(Tommy): Parse this and make sure it's a valid expression (otherwise it can really break things)
+        // Sometimes GPT is outputting "explore(...)" so maybe I should disallow those results
+        return parsedOutput.answer;
+
     } catch (error) {
         const message = (error as any).message;
         console.log("Error with chatGPT api: " + message);
