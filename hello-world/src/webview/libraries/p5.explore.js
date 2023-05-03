@@ -178,6 +178,12 @@
   let stintRandomIOStorage = {}
   let stintRandomMinMax = {}
   let stintRandomDegree = {}
+  let stintExtraPreview = new Set()
+
+  p5.prototype.plotDist = function(name,value,...axes){
+    stintExtraPreview.add(name);
+    updateIOStorage(name,value,axes)
+  }
 
   const updateIOStorage = function(randomID,retVal,axes){
     if (!stintRandomMinMax[randomID]) {
@@ -221,6 +227,7 @@
     stintRandomIOStorage = {}
     stintRandomMinMax = {}
     stintRandomDegree = {}
+    stintExtraPreview = new Set()
   };
 
   p5.prototype.sendPreviewData = function() {
@@ -230,7 +237,8 @@
       payload: {
         degree: stintRandomDegree,
         minMax: stintRandomMinMax,
-        storage: stintRandomIOStorage
+        storage: stintRandomIOStorage,
+        extra: Array.from(stintExtraPreview)
       }
     }
     window.parent.postMessage(obj,"*");

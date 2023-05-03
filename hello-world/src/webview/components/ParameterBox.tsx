@@ -305,4 +305,4 @@ function CanvasComponent({randomID,preview, ...props}) {
   );
 }
 
-export default ParameterBox;
+export {ParameterBox, CanvasComponent};

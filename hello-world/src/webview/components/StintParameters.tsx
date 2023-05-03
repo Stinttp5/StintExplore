@@ -1,5 +1,6 @@
 import React from 'react';
-import ParameterBox from './ParameterBox';
+import ExtraPreviewBox from './ExtraPreviewBox';
+import {ParameterBox} from './ParameterBox';
 
 export interface RandomType {
   id: string;
@@ -47,6 +48,13 @@ export interface PassthroughRandomParameters {
 
 export type RandomParameters = UniformRandomParameters | NormalRandomParameters | PerlinRandomParameters | ParetoRandomParameters | DrawableRandomParameters | PassthroughRandomParameters;
 
+// export interface PreviewType {
+//   stintRandomIOStorage: any;
+//   stintRandomMinMax: any;
+//   stintRandomDegree: any;
+//   stintExtraPreview: string[];
+// }
+
 interface StintParametersProps {
   randomTypes: RandomType[];
   preview: any;
@@ -71,6 +79,11 @@ function StintParameters({ randomTypes, setParameters, error, preview }: StintPa
             setParameters={setParameters} 
             preview={preview}/>
       )
+    }
+    {
+      preview ? preview.extra.map(
+        (id) => <ExtraPreviewBox idName={id} preview={preview}/>
+      ) : null
     }
   </div>;
 }
