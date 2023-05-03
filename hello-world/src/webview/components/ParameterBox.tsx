@@ -178,11 +178,20 @@ function CanvasComponent({randomID,preview, ...props}) {
     let stintRandomDegree = preview.degree[randomID];
     let stintRandomIOStorage = preview.storage[randomID];
     let stintRandomMinMax = preview.minMax[randomID];
-    console.log("randomID is",randomID,"preview is",preview)
-    if (stintRandomDegree == null || stintRandomIOStorage == null || stintRandomMinMax == null) return;
-
+    console.log("randomID is",randomID,"preview is",stintRandomIOStorage)
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
+    if (stintRandomDegree == null || stintRandomIOStorage == null || stintRandomMinMax == null) {
+      console.log("nothing here");
+      canvas.width = 100;
+      canvas.height = 20;
+      context.fillStyle = "white";
+      context.font = "14px Arial";
+      context.fillText("No Data", 0, canvas.height);
+      return;
+    }
+
+    
 
     if (stintRandomMinMax[0] == stintRandomMinMax[1]) {
       canvas.width = 100;
