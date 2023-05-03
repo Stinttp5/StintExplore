@@ -111,7 +111,7 @@ function StintWrapper() {
             </head>
             <body>
               <script>
-                ${newRandomTypes}
+                ${payload}
               </script>
             </body>
           </html>`);
