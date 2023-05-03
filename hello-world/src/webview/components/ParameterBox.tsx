@@ -6,7 +6,7 @@ import PerlinRandomParameterBox from './parameter_boxes/PerlinRandomParameterBox
 import ParetoRandomParameterBox from './parameter_boxes/ParetoRandomParameterBox';
 import DrawableRandomParameterBox from './parameter_boxes/DrawableRandomParameterBox';
 import PassthroughRandomParameterBox from './parameter_boxes/PassthroughRandomParameterBox';
-import { max } from 'lodash';
+import { max, min } from 'lodash';
 // import {stintRandomDegree,stintRandomIOStorage,stintRandomMinMax} from "../libraries/p5.preview"
 // import {sampleCanvasFromStorage,stintRandomMinMax} from "../libraries/p5.explore"
 
@@ -223,13 +223,32 @@ function CanvasComponent({randomID,preview, ...props}) {
           }
           break;
         case 1:
-          var gridSizeX = gridWidth / Object.keys(stintRandomIOStorage).length;
-          var xind = 0;
-          console.log("!!!!!!", Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b)));
-          for (var x of Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b))) {
-            console.log("!!!",x,stintRandomIOStorage[x]);
+          
+          // console.log("!!!!!!", Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b)));
+          var sortedX = Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b));
+          var xMax = Number(sortedX[sortedX.length-1]);
+          var xMin = Number(sortedX[0]);
+          var blen = min([10,Object.keys(stintRandomIOStorage).length]);
+          // console.log("blen:",blen);
+          var xBuckets = Array(blen).fill(new Array());
+          var gridSizeX = gridWidth / xBuckets.length;
+          for (var x of sortedX) {
+            var xBucket = (Number(x)-xMin)/(xMax-xMin);
+            if (xBucket == 1) {
+              xBucket = xBuckets.length-1;
+            } else {
+              xBucket = Math.floor(xBucket * xBuckets.length)
+            }
+            console.log("!!!!",x,xBucket);
+            // if (!xBuckets[xBucket]) {
+            //   xBuckets[xBucket] = new Array();
+            // }
+            xBuckets[xBucket] = xBuckets[xBucket].concat(stintRandomIOStorage[x])
+          }
+          for (var xind = 0; xind < xBuckets.length; xind++) {
+            console.log("!!!",xind,xBuckets[xind]);
             var buckets = Array(10).fill(0);
-            for (var entry of stintRandomIOStorage[x]) {
+            for (var entry of xBuckets[xind]) {
               var value = (Number(entry)-minVal)/(maxVal-minVal);
               if (value == 1) {
                 buckets[buckets.length-1] += 1;
@@ -252,15 +271,14 @@ function CanvasComponent({randomID,preview, ...props}) {
             //   context.fillRect(xind * gridSizeX, yind * gridSizeY, gridSizeX, gridSizeY);
             //   yind += 1;
             // }
-            xind += 1;
           }
           break;
         case 2:
           gridSizeX = gridWidth / Object.keys(stintRandomIOStorage).length;
           var xind = 0;
-          console.log("!!!!!!", Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b)));
+          // console.log("!!!!!!", Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b)));
           for (var x of Object.keys(stintRandomIOStorage).sort((a,b) => Number(a) - Number(b))) {
-            console.log("!!!",x,stintRandomIOStorage[x]);
+            // console.log("!!!",x,stintRandomIOStorage[x]);
             var gridSizeY = gridHeight / Object.keys(stintRandomIOStorage[x]).length;
             var yind = 0;
             for (var y of Object.keys(stintRandomIOStorage[x]).sort((a,b) => Number(a) - Number(b))) {
