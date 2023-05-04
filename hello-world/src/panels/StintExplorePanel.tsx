@@ -132,15 +132,14 @@ export class StintExplorePanel {
             body {
               display: flex;
               flex-direction: row;
-
-              width: 800px;
             }
 
             #stintRoot {
               /* flex: 1; */
-              width: 200px; /* yeah none of these width settings are working yikes */
+              width: 200px;
               padding: 10px;
-              box-sizing: border-box;
+              height: 100vh;
+              overflow: auto;
             }
 
             #sketch {

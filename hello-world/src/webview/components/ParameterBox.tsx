@@ -104,7 +104,6 @@ function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps)
   const [cachedType, setCachedType] = useState(randomType);
   const [showPreview, setShowPreview] = useState(false);
 
-  console.log("UPDATING BOX SDFGHJKJHGFDFGHJKJHGFDFGHJKLKJHGFDFGHJKJHGF")
   useEffect(() => {
     if (randomType !== cachedType) {
       setCachedType(randomType);
@@ -112,7 +111,6 @@ function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps)
   }, [randomType]);
 
   const setParametersShim = (id: string, parameters: RandomParameters) => {
-    console.log("setParametersShim", id, parameters);
     setParameters(id, parameters);
     setCachedType({
       ...cachedType,
