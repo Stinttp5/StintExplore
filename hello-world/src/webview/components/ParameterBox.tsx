@@ -127,7 +127,7 @@ function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps)
       </strong>
     </div>
 
-    <select className="parameterBox--dropdown" value={cachedType.parameters.type || ''} onChange={
+    Type: <select className="parameterBox--dropdown" value={cachedType.parameters.type || ''} onChange={
       e => {
         const newType = e.target.value as RandomParameters["type"] | '';
         setParametersShim(
