@@ -106,7 +106,6 @@ export const updateStintParameters = (id: string, parameters: any) => {
         if (randomId === id) {
           const parametersArg = node.arguments[1];
           if (parametersArg) {
-            console.log("found", { parametersArg });
             const loc = parametersArg.loc;
             foundLoc = loc;
           } else {
