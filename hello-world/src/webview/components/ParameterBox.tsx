@@ -102,6 +102,8 @@ const renderBox = (randomType: RandomType, setParameters: (id: string, parameter
 
 function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps) {
   const [cachedType, setCachedType] = useState(randomType);
+  const [showPreview, setShowPreview] = useState(false);
+
   console.log("UPDATING BOX SDFGHJKJHGFDFGHJKJHGFDFGHJKLKJHGFDFGHJKJHGF")
   useEffect(() => {
     if (randomType !== cachedType) {
@@ -127,12 +129,12 @@ function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps)
 
     <select value={cachedType.parameters.type || ''} onChange={
       e => {
-        const newType = e.target.value as RandomParameters["type"];
+        const newType = e.target.value as RandomParameters["type"] | '';
         setParametersShim(
           randomType.id,
           // @ts-ignore
           {
-            ...cachedType.parameters, // this will pollute the parameters over time as we change distributions, but it means:
+            ...(newType === '' ? {} : cachedType.parameters), // this will pollute the parameters over time as we change distributions, but it means:
             // a. we get to save the parameters of the previous distribution in case the user wants to switch back
             // b. if there are parameters with matching names (min, max), they'll be preserved
             type: newType,
@@ -152,7 +154,13 @@ function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps)
 
     {renderBox(cachedType, setParametersShim)}
     <div>
-      <CanvasComponent randomID={randomType.id} preview={preview}/>
+      <label>
+        <input type="checkbox" checked={showPreview} onChange={e => setShowPreview(e.target.checked)} />
+        Show output distribution
+      </label>
+      {
+        showPreview && <CanvasComponent randomID={randomType.id} preview={preview}/>
+      }
     </div>
   </div>;
 }
