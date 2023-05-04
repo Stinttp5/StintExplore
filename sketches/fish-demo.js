@@ -142,7 +142,7 @@ function draw() {
     for (var fish of currentFishes){
       fish.xPos = fish.xPos + fishSpeed
 
-      const fishY = explore('fishYOffset', { type: 'passthrough',min: -50,max: 50,distribution: [0.80625,0.5,0.16249999999999998,0.11875000000000002,0.09999999999999998,0.5625,0.7,0.8125,0.85625,0.51875],x: fish.xPos/200,value: 0 })
+      const fishY = explore('fishYOffset', { type: 'passthrough',min: -50,max: 50,distribution: [0.80625,0.5,0.16249999999999998,0.11875000000000002,0.09999999999999998,0.5625,0.7,0.8125,0.85625,0.51875],x: fish.xPos/200,value: 0,mean: 0,std: 2 },fish.xPos)
       fish.yOffset = fishY;
       fish.draw();
 
@@ -160,14 +160,14 @@ function draw() {
     }
 		//console.log(fish)
   }
-	
+	sendPreviewData();
 	
 }
 function newColor(){
   const R = explore('R', { type: 'passthrough',min: 0,max: 255,distribution: [0.8625,0.79375,0.043749999999999956,0.06874999999999998,0.050000000000000044,0.050000000000000044,0.050000000000000044,0.050000000000000044,0.0625,0],value: 100 })
   const G = explore('G', { type: 'passthrough',min: 0,max: 250,distribution: [0.03125,0.03125,0.043749999999999956,0.575,0.043749999999999956,0.06874999999999998,0.06874999999999998,0.03749999999999998,0.10624999999999996,0.9625],value: 100 })
   const B = explore('B', { type: 'passthrough',min: 0,max: 255,distribution: [1,0.83125,0.65,0.24375000000000002,0.25,0.5375,0.7,0.85625,0.95,1],value: 100 })
-  const A = explore('A', { type: 'passthrough',min: 100,max: 255,distribution: [0.80625,0.5,0.16249999999999998,0.11875000000000002,0.09999999999999998,0.5625,0.7,0.8125,0.85625,0.51875] })
+  const A = explore('A', { type: 'passthrough',min: 100,max: 255,distribution: [0.80625,0.5,0.16249999999999998,0.11875000000000002,0.09999999999999998,0.5625,0.7,0.8125,0.85625,0.51875],value: 200 })
   color = [R, G, B, A];
   return color
 }
