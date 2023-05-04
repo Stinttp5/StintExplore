@@ -57,7 +57,7 @@ function DrawableRandomParameterBox({ parameters, setParameters }: DrawableRando
                 const rect = e.currentTarget.getBoundingClientRect();
                 const y = e.clientY - rect.top;
                 let newValue = Math.max(0, Math.min(1, 1 - y / DISTRIBUTION_HEIGHT));
-                if (newValue < 0.02) newValue = 0; // just to make sure it's possible to zero out if you want to
+                if (newValue < 0.04) newValue = 0; // just to make sure it's possible to zero out if you want to
                 const newDistribution = [...distribution];
                 newDistribution[index] = newValue;
                 setParameters({

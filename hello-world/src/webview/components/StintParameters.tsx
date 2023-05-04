@@ -71,6 +71,9 @@ function StintParameters({ randomTypes, setParameters, error, preview }: StintPa
 
   return <div>
     {
+      randomTypes.length === 0 ? <div>
+        <code>explore()</code> calls will appear here.
+      </div> :
       randomTypes.map(
         (randomType) =>
           <ParameterBox

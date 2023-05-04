@@ -161,6 +161,8 @@
 
       // console.log('explore', parameters)
       let ret = namesToFunctions[type].apply(this, [parameters]);
+      if (isNaN(ret)) ret = parameters.min || 0; // TODO: this should surface an error in the UI
+
       updateIOStorage(_randomId,ret,axes);
       return ret;
     } else {

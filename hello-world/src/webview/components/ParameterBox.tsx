@@ -10,6 +10,8 @@ import { max, min } from 'lodash';
 // import {stintRandomDegree,stintRandomIOStorage,stintRandomMinMax} from "../libraries/p5.preview"
 // import {sampleCanvasFromStorage,stintRandomMinMax} from "../libraries/p5.explore"
 
+import './ParameterBox.css';
+
 interface ParameterBoxProps {
   randomType: RandomType;
   setParameters: (id: string, parameters: RandomParameters) => void;
@@ -118,14 +120,14 @@ function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps)
     });
   };
 
-  return <div style={{ marginBottom: 30 }}> {/* sorry isabel don't hate me pls :)) */}
-    <div>
+  return <div className="parameterBox">
+    <div className="parameterBox--header">
       <strong>
         {randomType.id}
       </strong>
     </div>
 
-    <select value={cachedType.parameters.type || ''} onChange={
+    <select className="parameterBox--dropdown" value={cachedType.parameters.type || ''} onChange={
       e => {
         const newType = e.target.value as RandomParameters["type"] | '';
         setParametersShim(
@@ -151,10 +153,10 @@ function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps)
     
 
     {renderBox(cachedType, setParametersShim)}
-    <div>
+    <div className="parameterBox--preview">
       <label>
         <input type="checkbox" checked={showPreview} onChange={e => setShowPreview(e.target.checked)} />
-        Show output distribution
+        Show runtime output
       </label>
       {
         showPreview && <CanvasComponent randomID={randomType.id} preview={preview}/>
@@ -192,7 +194,7 @@ function CanvasComponent({randomID,preview, ...props}) {
       canvas.width = 100;
       canvas.height = 20;
       context.fillStyle = "white";
-      context.font = "14px Arial";
+      context.font = "14px Nunito";
       context.fillText("No Data", 0, canvas.height);
       return;
     }
@@ -203,7 +205,7 @@ function CanvasComponent({randomID,preview, ...props}) {
       canvas.width = 100;
       canvas.height = 20;
       context.fillStyle = "white";
-      context.font = "14px Arial";
+      context.font = "14px Nunito";
       context.fillText("Value: " + stintRandomMinMax[0].toFixed(2), 0, canvas.height);
     } else {
       // Draw on the canvas using the 2D context
@@ -212,7 +214,7 @@ function CanvasComponent({randomID,preview, ...props}) {
       canvas.width = gridWidth + 100;
       canvas.height = gridHeight + 20;
       context.fillStyle = "white";
-      context.font = "14px Arial";
+      context.font = "14px Nunito";
       context.fillText("Min: " + stintRandomMinMax[0].toFixed(2) + " Max: " + stintRandomMinMax[1].toFixed(2), 0, canvas.height);
 
       let minVal = stintRandomMinMax[0];
