@@ -128,6 +128,9 @@ export class StintExplorePanel {
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>p5ushi.js</title>
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Roboto+Mono&display=swap" rel="stylesheet">
           <style>
             body {
               display: flex;
@@ -140,12 +143,69 @@ export class StintExplorePanel {
               padding: 10px;
               height: 100vh;
               overflow: auto;
+              font-family: 'Nunito';
             }
 
             #sketch {
               width: 600px;
               height: 600px;
               /* flex: 3; */
+            }
+
+            .parameterBox {
+              background: #444;
+              border-radius: 2px;
+              margin-bottom: 20px;
+              padding: 4px 10px;
+            }
+
+            .parameterBox--header {
+              padding: 5px 0;
+              font-size: 16px;
+            }
+
+            .parameterBox--dropdown {
+              font-size: 10pt;
+              background-color: transparent;
+              border: none;
+              color: white;
+              margin-bottom: 8px;
+            }
+
+            .parameterBox--dropdown option {
+              background-color: #444;
+              padding: 1px;
+            }
+
+            code {
+              font-family: 'Roboto Mono';
+            }
+
+            .parameterBox input[type=text] {
+              max-width: 80%; /* ugh for now */
+              margin-left: 8px;
+              margin-bottom: 12px;
+              display: block;
+
+              color: white;
+              background: #333;
+              border: none;
+              padding: 4px;
+              font-size: 10pt;
+              font-family: 'Roboto Mono';
+              box-sizing: border-box;
+            }
+
+            .parameterBox input[type=checkbox] {
+              accent-color: #111;
+              width: 14px;
+              height: 14px;
+              opacity: 0.5;
+
+            }
+
+            .parameterBox--preview {
+              margin-top: 16px;
             }
           </style>
         </head>
