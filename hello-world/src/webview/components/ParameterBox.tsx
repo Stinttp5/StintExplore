@@ -102,6 +102,8 @@ const renderBox = (randomType: RandomType, setParameters: (id: string, parameter
 
 function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps) {
   const [cachedType, setCachedType] = useState(randomType);
+  const [showPreview, setShowPreview] = useState(false);
+
   console.log("UPDATING BOX SDFGHJKJHGFDFGHJKJHGFDFGHJKLKJHGFDFGHJKJHGF")
   useEffect(() => {
     if (randomType !== cachedType) {
@@ -152,7 +154,13 @@ function ParameterBox({ randomType, setParameters, preview }: ParameterBoxProps)
 
     {renderBox(cachedType, setParametersShim)}
     <div>
-      <CanvasComponent randomID={randomType.id} preview={preview}/>
+      <label>
+        <input type="checkbox" checked={showPreview} onChange={e => setShowPreview(e.target.checked)} />
+        Show output distribution
+      </label>
+      {
+        showPreview && <CanvasComponent randomID={randomType.id} preview={preview}/>
+      }
     </div>
   </div>;
 }
