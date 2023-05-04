@@ -55,6 +55,7 @@
   "dependencies": {
     "@types/p5": "^1.6.1",
     "@vscode/webview-ui-toolkit": "^1.2.1",
+    "astring": "^1.8.4",
     "estree-util-visit": "^1.2.1",
     "lodash": "^4.17.21",
     "meriyah": "^4.3.5",

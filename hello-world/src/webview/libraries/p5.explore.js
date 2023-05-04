@@ -88,6 +88,7 @@
     "pareto": _stint_paretoRandom,
     "drawable": _stint_drawableRandom,
     "passthrough": _stint_passthrough,
+    "gptsuggest": _stint_passthrough,
   }
 
   var namesToParams = {
@@ -97,6 +98,7 @@
     "pareto": ["min", "alpha"],
     "drawable": ["min", "max", "distribution"],
     "passthrough": ["value"],
+    "gptsuggest": ["value"],
     // "GPTsuggest": [] // tima: I was thinking we could implement the gpt ui just in the React component and then have it save as 'passthrough'. mostly so we don't have to store a bunch of state in the source code -- but anything works with me
   }
 
