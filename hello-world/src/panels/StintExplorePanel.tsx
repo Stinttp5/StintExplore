@@ -138,12 +138,14 @@ export class StintExplorePanel {
               /* flex: 1; */
               width: 200px;
               padding: 10px;
+              height: 100vh;
+              overflow: auto;
             }
 
             #sketch {
               width: 600px;
               height: 600px;
-              /* flex: 3; */7
+              /* flex: 3; */
             }
           </style>
         </head>
