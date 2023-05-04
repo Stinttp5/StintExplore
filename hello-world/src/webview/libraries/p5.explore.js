@@ -16,7 +16,7 @@
 
   const _stint_perlinRandom = function (parameters) {
     const { min, max, x, y, z } = parameters;
-    return noise.apply(this, [x ? (x + 0.001) : undefined, y ? (y + 0.001) : undefined, z ? (z + 0.001) : undefined]) * (max - min) + min
+    return noise.apply(this, [x != null ? (x + 0.001) : undefined, y != null ? (y + 0.001) : undefined, z != null ? (z + 0.001) : undefined]) * (max - min) + min
   };
 
   const _stint_drawableRandom = function (parameters) {
