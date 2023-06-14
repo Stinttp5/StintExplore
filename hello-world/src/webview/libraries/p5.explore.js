@@ -202,6 +202,7 @@
       }
       stintRandomIOStorage[randomID].push(retVal)
     } else if (axes.length === 1) {
+      if (isNaN(axes[0])) return;
       stintRandomDegree[randomID] = 1;
       if (!(randomID in stintRandomIOStorage)){
         stintRandomIOStorage[randomID] = {}
